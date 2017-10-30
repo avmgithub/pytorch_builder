@@ -125,7 +125,7 @@ if [ "$OS" == "LINUX" ]; then
             
         else
             echo "Downloading CUDA 8.0"
-            wget -c https://developer.nvidia.com/compute/cuda/8.0/prod/local_installers/cuda_8.0.44_linux-run -O ~/cuda_8.0.44_linux-run
+            wget --no-check-certificate -c https://developer.nvidia.com/compute/cuda/8.0/prod/local_installers/cuda_8.0.44_linux-run -O ~/cuda_8.0.44_linux-run
 
             echo "Installing CUDA 8.0"
             chmod +x ~/cuda_8.0.44_linux-run

@@ -113,8 +113,15 @@ if [ "$OS" == "LINUX" ]; then
     if ! ls /usr/local/cuda-8.0
     then
         if [ "$ARCH" == "ppc64le" ]; then
-            echo "Install CUDA 8.0 for ppc64le"
-            exit
+            echo "Downloading CUDA 9.0 for ppc64le"
+	    wget -c https://developer.nvidia.com/compute/cuda/9.0/Prod/local_installers/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_ppc64el-deb -O ~/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_ppc64el.deb
+	    sudo dpkg -i ~/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_ppc64el.deb
+	    sudo apt-key add /var/cuda-repo-ubuntu1604-9-0-local/7fa2af80.pub
+	    sudo apt-get update
+	    
+	    echo "Install CUDA 9.0 for ppc64le"
+	    sudo apt-get install cuda
+            
         else
             echo "Downloading CUDA 8.0"
             wget -c https://developer.nvidia.com/compute/cuda/8.0/prod/local_installers/cuda_8.0.44_linux-run -O ~/cuda_8.0.44_linux-run

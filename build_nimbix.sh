@@ -114,6 +114,7 @@ if [ "$OS" == "LINUX" ]; then
     then
         if [ "$ARCH" == "ppc64le" ]; then
             echo "Downloading CUDA 9.0 for ppc64le"
+	    sudo apt-get install -y wget
 	    wget -c https://developer.nvidia.com/compute/cuda/9.0/Prod/local_installers/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_ppc64el-deb -O ~/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_ppc64el.deb
 	    sudo dpkg -i ~/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_ppc64el.deb
 	    sudo apt-key add /var/cuda-repo-ubuntu1604-9-0-local/7fa2af80.pub

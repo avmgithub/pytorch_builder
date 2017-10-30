@@ -76,6 +76,7 @@ if [ "$OS" == "LINUX" ]; then
         git clone https://github.com/colesbury/ccache -b ccbin
         pushd ccache
         if [ "$ARCH" == "ppc64le" ]; then
+	    sudo apt-get install -y curl
             /usr/bin/curl -o config.guess "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD"
             /usr/bin/curl -o config.sub "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD"
             ./autogen.sh

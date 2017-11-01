@@ -107,7 +107,7 @@ if [ "$OS" == "LINUX" ]; then
     export PATH=/usr/local/cuda/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
     if [ "$ARCH" == "ppc64le" ]; then
-        export LD_LIBRARY_PATH=/usr/local/magma/lib:/opt/DL/openblas/lib:$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=/usr/local/magma/lib:/opt/conda/lib:$LD_LIBRARY_PATH
     fi
 
     if ! ls /usr/local/cuda-8.0
@@ -233,7 +233,7 @@ if [ "$OS" == "LINUX" ]; then
        	    cp make.inc-examples/make.inc.openblas make.inc 
             sed -i 's/nvcc/\/usr\/local\/cuda\/bin\/nvcc/' make.inc
             sed -i 's/#OPENBLASDIR/OPENBLASDIR/' make.inc
-            sed -i 's/\/usr\/local\/openblas/\/opt\/DL\/openblas/' make.inc
+            sed -i 's/\/usr\/local\/openblas/\/opt\/conda\/lib/' make.inc
             sed -i 's/#CUDADIR/CUDADIR/' make.inc
             make install
             popd

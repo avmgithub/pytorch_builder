@@ -214,7 +214,7 @@ fi
 
 # install mkl
 if [ "$ARCH" == "ppc64le" ]; then
-    conda install -y numpy
+    conda install -y numpy openblas
 else
     conda install -y mkl numpy
 fi

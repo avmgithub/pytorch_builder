@@ -107,7 +107,7 @@ if [ "$OS" == "LINUX" ]; then
     export PATH=/usr/local/cuda/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
     if [ "$ARCH" == "ppc64le" ]; then
-        export LD_LIBRARY_PATH=/usr/local/magma/lib:/opt/conda/lib:$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
     fi
 
     if ! ls /usr/local/cuda-8.0

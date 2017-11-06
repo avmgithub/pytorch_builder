@@ -230,7 +230,7 @@ if [ "$OS" == "LINUX" ]; then
             cp make.inc-examples/make.inc.openblas make.inc
             sed -i 's/nvcc/\/usr\/local\/cuda\/bin\/nvcc/' make.inc
             sed -i 's/#OPENBLASDIR/OPENBLASDIR/' make.inc
-            sed -i 's/\/usr\/local\/openblas/\/usr\/lib/' make.inc
+            sed -i 's/\/usr\/local\/openblas/\/usr/' make.inc
             sed -i 's/#CUDADIR/CUDADIR/' make.inc
             sudo make install
             popd

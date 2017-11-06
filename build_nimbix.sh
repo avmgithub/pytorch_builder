@@ -35,8 +35,6 @@ echo "Disks:"
 df -h || true
 
 if [ "$OS" == "LINUX" ]; then
-        echo "running nvidia-smi"
-        nvidia-smi
     if [ "$ARCH" == "ppc64le" ]; then
         # ppc64le builds do not have GPU enabled so skip this for now
         # echo "skipping running nvidia-smi"

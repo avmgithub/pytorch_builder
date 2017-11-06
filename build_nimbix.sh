@@ -35,8 +35,11 @@ echo "Disks:"
 df -h || true
 
 if [ "$OS" == "LINUX" ]; then
+        echo "running nvidia-smi"
+        nvidia-smi
     if [ "$ARCH" == "ppc64le" ]; then
-        echo "skipping running nvidia-smi"
+        # ppc64le builds do not have GPU enabled so skip this for now
+        # echo "skipping running nvidia-smi"
 
         echo "Processor info"
         cat /proc/cpuinfo|grep "cpu" | wc -l
@@ -51,10 +54,8 @@ if [ "$OS" == "LINUX" ]; then
         cat /proc/cpuinfo|grep "flags" | sort | uniq
     fi
 
-
     echo "Linux release:"
     lsb_release -a || true
-
 else
     echo "Processor info"    
     sysctl -n machdep.cpu.brand_string
@@ -76,7 +77,7 @@ if [ "$OS" == "LINUX" ]; then
         git clone https://github.com/colesbury/ccache -b ccbin
         pushd ccache
         if [ "$ARCH" == "ppc64le" ]; then
-	    sudo apt-get install -y curl
+            sudo apt-get install -y curl
             /usr/bin/curl -o config.guess "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD"
             /usr/bin/curl -o config.sub "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD"
             ./autogen.sh
@@ -114,16 +115,10 @@ if [ "$OS" == "LINUX" ]; then
     if ! ls /usr/local/cuda-8.0
     then
         if [ "$ARCH" == "ppc64le" ]; then
-            echo "Downloading CUDA 9.0 for ppc64le"
-	    sudo apt-get install -y wget
-	    wget --no-check-certificate -c https://developer.nvidia.com/compute/cuda/9.0/Prod/local_installers/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_ppc64el-deb -O ~/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_ppc64el.deb
-	    sudo dpkg -i ~/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_ppc64el.deb
-	    sudo apt-key add /var/cuda-repo-ubuntu1604-9-0-local/7fa2af80.pub
-	    sudo apt-get update
-	    
-	    echo "Install CUDA 9.0 for ppc64le"
-	    sudo apt-get install cuda
-            
+            # ppc64le builds assume to have all CUDA libraries installed
+            # if they are not installed then exit and fix the problem
+            echo "Download CUDA 8.0 for ppc64le"
+            exit
         else
             echo "Downloading CUDA 8.0"
             wget -c https://developer.nvidia.com/compute/cuda/8.0/prod/local_installers/cuda_8.0.44_linux-run -O ~/cuda_8.0.44_linux-run
@@ -131,7 +126,6 @@ if [ "$OS" == "LINUX" ]; then
             echo "Installing CUDA 8.0"
             chmod +x ~/cuda_8.0.44_linux-run
             sudo bash ~/cuda_8.0.44_linux-run --silent --toolkit --no-opengl-libs
-
             echo "\nDone installing CUDA 8.0"
         fi
     else
@@ -141,6 +135,10 @@ if [ "$OS" == "LINUX" ]; then
     echo "nvcc: $(which nvcc)"
 
     if [ "$ARCH" == "ppc64le" ]; then
+        # cuDNN libraries need to be downloaded from NVDIA and 
+        # requires user registration.
+        # ppc64le builds assume to have all cuDNN libraries installed
+        # if they are not installed then exit and fix the problem
         if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21
         then
             echo "Install CuDNN 6.0 for ppc64le"
@@ -161,10 +159,10 @@ if [ "$OS" == "LINUX" ]; then
             echo "Downloaded and installed CuDNN 6.0.21"
         fi
     fi
-
 fi
 
 echo "Checking Miniconda"
+
 
 if [ "$OS" == "LINUX" ]; then
     if [ "$ARCH" == "ppc64le" ]; then
@@ -226,19 +224,19 @@ conda install -y pyyaml
 if [ "$OS" == "LINUX" ]; then
     if [ "$ARCH" == "ppc64le" ]; then
         if ! ls /usr/local/magma/lib/libmagma.so
-	then
+        then
             sudo apt-get install -y gfortran
             /usr/bin/curl -o magma-2.2.0.tar.gz "http://icl.cs.utk.edu/projectsfiles/magma/downloads/magma-2.2.0.tar.gz"
             gunzip -c magma-2.2.0.tar.gz | tar -xvf -
             pushd magma-2.2.0
-       	    cp make.inc-examples/make.inc.openblas make.inc 
+            cp make.inc-examples/make.inc.openblas make.inc
             sed -i 's/nvcc/\/usr\/local\/cuda\/bin\/nvcc/' make.inc
             sed -i 's/#OPENBLASDIR/OPENBLASDIR/' make.inc
             sed -i 's/\/usr\/local\/openblas/\/usr\/lib/' make.inc
             sed -i 's/#CUDADIR/CUDADIR/' make.inc
             sudo make install
             popd
-	fi
+        fi
     else
         conda install -y magma-cuda80 -c soumith
     fi
@@ -251,10 +249,27 @@ export CMAKE_PREFIX_PATH=$CONDA_ROOT_PREFIX
 echo "Python Version:"
 python --version
 
-# Uninstall onnx and onnx-caffe2; if stale versions are left over,
-# we may spuriously run test/test_onnx.py when we don't want to
-pip uninstall -y onnx || true
-pip uninstall -y onnx-caffe2 || true
+# Why is this uninstall necessary?  In ordinary development,
+# 'python setup.py install' will overwrite an old install, so
+# it is not usually necessary uninstall the old install first.
+# However, it turns out that setuptools performs this install
+# simply by copying files one-by-one, overwriting the old files,
+# NOT an uninstall and reinstall.  This means that there is one
+# nasty edge case:  suppose you have an old install of
+# 'foo/bar/__init__.py', and your new install is 'foo/bar.py'
+# (although this is "rare" to occur in a project history, it
+# might occur if you PR a change to use __init__, but then builder
+# goes back and builds another PR without this change).
+# Because there is no uninstall step, BOTH 'foo/bar.py' and
+# 'foo/bar/__init__.py' will exist in the install, and
+# 'foo/bar/__init__.py' will ALWAYS win import resolution, even
+# though you wanted 'foo/bar.py'.
+#
+# The fix is simple: uninstall, then reinstall.  Of course, if the
+# uninstall leaves files behind, you can still get into a bad situation,
+# but it is less likely to occur now.
+echo "Removing old builds of torch"
+pip uninstall -y torch || true
 
 echo "Installing $PROJECT at branch $GIT_BRANCH and commit $GIT_COMMIT"
 rm -rf $PROJECT
@@ -273,6 +288,12 @@ pip install -r requirements.txt || true
 time python setup.py install
 
 if [ ! -z "$jenkins_nightly" ]; then
+    # Uninstall any leftover copies of onnx and onnx-caffe2
+    echo "Removing any old builds"
+    pip uninstall -y onnx || true
+    pip uninstall -y onnx-caffe2 || true
+    pip uninstall -y onnx-pytorch || true
+
     echo "Installing nightly dependencies"
     conda install -y -c ezyang/label/gcc5 -c conda-forge protobuf scipy caffe2
     git clone https://github.com/onnx/onnx-caffe2.git --recurse-submodules --quiet

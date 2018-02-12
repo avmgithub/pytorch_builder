@@ -3,7 +3,6 @@
 echo "here in build_nimbix"
 
 set -e
-set -x
 
 PROJECT=$1
 GIT_COMMIT=$2
@@ -111,7 +110,7 @@ if [ "$OS" == "LINUX" ]; then
         export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
     fi
 
-    if ! ls /usr/local/cuda-8.0 
+    if ! ls /usr/local/cuda-8.0
     then
         if [ "$ARCH" == "ppc64le" ]; then
             if ! ls /usr/local/cuda-8.0 && ! ls /usr/local/cuda-9.0
@@ -120,14 +119,15 @@ if [ "$OS" == "LINUX" ]; then
                 # if they are not installed then exit and fix the problem
                 echo "Download CUDA 8.0 or CUDA 9.0 for ppc64le"
                 exit
-        else
-            echo "Downloading CUDA 8.0"
-            wget -c https://developer.nvidia.com/compute/cuda/8.0/prod/local_installers/cuda_8.0.44_linux-run -O ~/cuda_8.0.44_linux-run
+            else
+                echo "Downloading CUDA 8.0"
+                wget -c https://developer.nvidia.com/compute/cuda/8.0/prod/local_installers/cuda_8.0.44_linux-run -O ~/cuda_8.0.44_linux-run
 
-            echo "Installing CUDA 8.0"
-            chmod +x ~/cuda_8.0.44_linux-run
-            sudo bash ~/cuda_8.0.44_linux-run --silent --toolkit --no-opengl-libs
-            echo "\nDone installing CUDA 8.0"
+                echo "Installing CUDA 8.0"
+                chmod +x ~/cuda_8.0.44_linux-run
+                sudo bash ~/cuda_8.0.44_linux-run --silent --toolkit --no-opengl-libs
+                echo "\nDone installing CUDA 8.0"
+            fi
         fi
     else
         echo "CUDA 8.0 already installed"

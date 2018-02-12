@@ -107,16 +107,19 @@ if [ "$OS" == "LINUX" ]; then
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
     if [ "$ARCH" == "ppc64le" ]; then
         sudo apt-get install -y libopenblas-dev
+        sudo apt-get install libopenmpi-dev -y
         export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
     fi
 
-    if ! ls /usr/local/cuda-8.0
+    if ! ls /usr/local/cuda-8.0 
     then
         if [ "$ARCH" == "ppc64le" ]; then
-            # ppc64le builds assume to have all CUDA libraries installed
-            # if they are not installed then exit and fix the problem
-            echo "Download CUDA 8.0 for ppc64le"
-            exit
+            if ! ls /usr/local/cuda-8.0 && ! ls /usr/local/cuda-9.0
+            then 
+                # ppc64le builds assume to have all CUDA libraries installed
+                # if they are not installed then exit and fix the problem
+                echo "Download CUDA 8.0 or CUDA 9.0 for ppc64le"
+                exit
         else
             echo "Downloading CUDA 8.0"
             wget -c https://developer.nvidia.com/compute/cuda/8.0/prod/local_installers/cuda_8.0.44_linux-run -O ~/cuda_8.0.44_linux-run
@@ -137,9 +140,9 @@ if [ "$OS" == "LINUX" ]; then
         # requires user registration.
         # ppc64le builds assume to have all cuDNN libraries installed
         # if they are not installed then exit and fix the problem
-        if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21
+        if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7.0.3
         then
-            echo "Install CuDNN 6.0 for ppc64le"
+            echo "Install (CUDA 8) CuDNN 6.0 or (CUDA 9) 7.0 for ppc64le"
             exit
         fi
     else
@@ -164,7 +167,7 @@ echo "Checking Miniconda"
 
 if [ "$OS" == "LINUX" ]; then
     if [ "$ARCH" == "ppc64le" ]; then
-        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-4.2.12-Linux-ppc64le.sh"
+        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh
     else
         miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
     fi
@@ -211,7 +214,11 @@ fi
 
 # install mkl
 if [ "$ARCH" == "ppc64le" ]; then
-    conda install -y numpy openblas
+    # Installing numpy via conda pulls in openblas 2.19 , but it has a bug
+    # Workaround is to install via pip until openblas gets updated to
+    # newer version 2.20
+    # conda install -y numpy openblas
+    pip install numpy
 else
     conda install -y mkl numpy
 fi

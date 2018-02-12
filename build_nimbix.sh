@@ -167,7 +167,7 @@ echo "Checking Miniconda"
 
 if [ "$OS" == "LINUX" ]; then
     if [ "$ARCH" == "ppc64le" ]; then
-        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh
+        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh"
     else
         miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
     fi

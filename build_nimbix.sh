@@ -54,14 +54,13 @@ if [ "$OS" == "LINUX" ]; then
     fi
 
     echo "Linux release:"
-    lsb_release -a || true
+    #lsb_release -a || true
 else
     echo "Processor info"    
     sysctl -n machdep.cpu.brand_string
 fi
 
 uname -a
-
 
 if [ "$OS" == "LINUX" ]; then
     # install and export ccache

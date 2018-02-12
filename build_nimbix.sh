@@ -256,6 +256,8 @@ if [ "$OS" == "LINUX" ]; then
             sed -i 's/#GPU_TARGET ?= Kepler Maxwell Pascal/GPU_TARGET ?= Kepler Maxwell Pascal/' make.inc
             sudo make install
             popd
+            rm magma-2.3.0.tar.gz
+            rm -rf magma-2.3.0
         fi
     else
         conda install -y magma-cuda80 -c soumith

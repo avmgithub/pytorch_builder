@@ -231,14 +231,15 @@ if [ "$OS" == "LINUX" ]; then
         if ! ls /usr/local/magma/lib/libmagma.so
         then
             sudo apt-get install -y gfortran
-            /usr/bin/curl -o magma-2.2.0.tar.gz "http://icl.cs.utk.edu/projectsfiles/magma/downloads/magma-2.2.0.tar.gz"
-            gunzip -c magma-2.2.0.tar.gz | tar -xvf -
-            pushd magma-2.2.0
+            /usr/bin/curl -o magma-2.3.0.tar.gz "http://icl.cs.utk.edu/projectsfiles/magma/downloads/magma-2.2.0.tar.gz"
+            gunzip -c magma-2.3.0.tar.gz | tar -xvf -
+            pushd magma-2.3.0
             cp make.inc-examples/make.inc.openblas make.inc
             sed -i 's/nvcc/\/usr\/local\/cuda\/bin\/nvcc/' make.inc
             sed -i 's/#OPENBLASDIR/OPENBLASDIR/' make.inc
             sed -i 's/\/usr\/local\/openblas/\/usr/' make.inc
             sed -i 's/#CUDADIR/CUDADIR/' make.inc
+            sed -i 's/#GPU_TARGET ?= Kepler Maxwell Pascal/GPU_TARGET ?= Kepler Maxwell Pascal/' make.inc
             sudo make install
             popd
         fi

@@ -225,12 +225,15 @@ fi
 
 #install ninja
 if [ "$ARCH" == "ppc64le" ]; then
-    git clone https://github.com/ninja-build/ninja.git
-    pushd ninja
-    git checkout tags/v1.7.2
-    ./configure.py --bootstrap 
-    cp ninja /usr/local/bin
-    popd
+    if ! ls /usr/local/bin/ninja
+    then
+        git clone https://github.com/ninja-build/ninja.git
+        pushd ninja
+        git checkout tags/v1.7.2
+        ./configure.py --bootstrap 
+        sudo cp ninja /usr/local/bin
+        popd
+    fi
 fi
 
 

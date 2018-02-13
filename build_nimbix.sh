@@ -254,7 +254,7 @@ if [ "$OS" == "LINUX" ]; then
             sed -i 's/\/usr\/local\/openblas/\/usr/' make.inc
             sed -i 's/#CUDADIR/CUDADIR/' make.inc
             sed -i 's/#GPU_TARGET ?= Kepler Maxwell Pascal/GPU_TARGET ?= Kepler Maxwell Pascal/' make.inc
-            sudo make install
+            sudo make -j32 install
             popd
             rm magma-2.3.0.tar.gz
             rm -rf magma-2.3.0

@@ -238,7 +238,7 @@ fi
 
 
 # install pyyaml (for setup)
-conda install -y pyyaml
+conda install -y pyyaml typing
 
 if [ "$OS" == "LINUX" ]; then
     if [ "$ARCH" == "ppc64le" ]; then

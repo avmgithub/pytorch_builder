@@ -344,7 +344,12 @@ fi
 echo "Testing pytorch"
 export OMP_NUM_THREADS=4
 export MKL_NUM_THREADS=4
-time test/run_test.sh
+
+# Old path for test
+# time test/run_test.sh
+
+# New pytorch test script
+time python test/run_test.py --verbose
 
 echo "Installing torchvision at branch master"
 rm -rf vision

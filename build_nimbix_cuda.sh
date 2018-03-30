@@ -161,7 +161,7 @@ if [ "$OS" == "LINUX" ]; then
 #            echo "Downloaded and installed CuDNN 6.0.21"
 #        fi
 #    fi
-#fi
+fi
 
 echo "Checking Miniconda"
 

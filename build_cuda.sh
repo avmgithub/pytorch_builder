@@ -165,15 +165,15 @@ uname -a
 
 echo "Checking Miniconda"
 
-if [ "$OS" == "LINUX" ]; then
-    if [ "$ARCH" == "ppc64le" ]; then
-        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh"
-    else
-        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
-    fi
-else
-    miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
-fi
+#if [ "$OS" == "LINUX" ]; then
+#    if [ "$ARCH" == "ppc64le" ]; then
+#        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh"
+#    else
+#        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+#    fi
+#else
+#    miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
+#fi
 
 if ! ls ~/miniconda
 then
@@ -191,19 +191,19 @@ export PATH="$HOME/miniconda/bin:$PATH"
 export CONDA_ROOT_PREFIX=$(conda info --root)
 
 # by default we install py3. If requested py2, create env and activate
-if [ $PYTHON_VERSION -eq 2 ]
-then
-    echo "Requested python version 2. Activating conda environment"
-    if ! conda info --envs | grep py2k
-    then
+#if [ $PYTHON_VERSION -eq 2 ]
+#then
+#    echo "Requested python version 2. Activating conda environment"
+#    if ! conda info --envs | grep py2k
+#    then
 	# create virtual env and activate it
-	conda create -n py2k python=2 -y
-    fi
-    source activate py2k
-    export CONDA_ROOT_PREFIX="$HOME/miniconda/envs/py2k"
-else
-    source activate root
-fi
+#	conda create -n py2k python=2 -y
+#    fi
+#    source activate py2k
+#    export CONDA_ROOT_PREFIX="$HOME/miniconda/envs/py2k"
+#else
+#    source activate root
+#fi
 
 echo "Conda root: $CONDA_ROOT_PREFIX"
 

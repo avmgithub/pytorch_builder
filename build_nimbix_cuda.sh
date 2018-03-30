@@ -63,50 +63,50 @@ uname -a
 
 if [ "$OS" == "LINUX" ]; then
     # install and export ccache
-    if ! ls ~/ccache/bin/ccache
-    then
-        apt-get update
-        apt-get install -y automake autoconf
-        apt-get install -y asciidoc
-        mkdir -p ~/ccache
-        pushd /tmp
-        rm -rf ccache
-        git clone https://github.com/colesbury/ccache -b ccbin
-        pushd ccache
-        if [ "$ARCH" == "ppc64le" ]; then
-            apt-get install -y curl
-            /usr/bin/curl -o config.guess "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD"
-            /usr/bin/curl -o config.sub "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD"
-            ./autogen.sh
-            ./configure
-        else
-            ./autogen.sh
-            ./configure
-        fi
-        make install prefix=~/ccache
-        popd
-        popd
+#    if ! ls ~/ccache/bin/ccache
+#    then
+#        apt-get update
+#        apt-get install -y automake autoconf
+#        apt-get install -y asciidoc
+#        mkdir -p ~/ccache
+#        pushd /tmp
+#        rm -rf ccache
+#        git clone https://github.com/colesbury/ccache -b ccbin
+#        pushd ccache
+#        if [ "$ARCH" == "ppc64le" ]; then
+#            apt-get install -y curl
+#            /usr/bin/curl -o config.guess "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD"
+#            /usr/bin/curl -o config.sub "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD"
+#            ./autogen.sh
+#            ./configure
+#        else
+#            ./autogen.sh
+#            ./configure
+#        fi
+#        make install prefix=~/ccache
+#        popd
+#        popd
 
-        mkdir -p ~/ccache/lib
-        mkdir -p ~/ccache/cuda
-        ln -s ~/ccache/bin/ccache ~/ccache/lib/cc
-        ln -s ~/ccache/bin/ccache ~/ccache/lib/c++
-        ln -s ~/ccache/bin/ccache ~/ccache/lib/gcc
-        ln -s ~/ccache/bin/ccache ~/ccache/lib/g++
-        ln -s ~/ccache/bin/ccache ~/ccache/cuda/nvcc
+#        mkdir -p ~/ccache/lib
+#        mkdir -p ~/ccache/cuda
+#        ln -s ~/ccache/bin/ccache ~/ccache/lib/cc
+#        ln -s ~/ccache/bin/ccache ~/ccache/lib/c++
+#        ln -s ~/ccache/bin/ccache ~/ccache/lib/gcc
+#        ln -s ~/ccache/bin/ccache ~/ccache/lib/g++
+#        ln -s ~/ccache/bin/ccache ~/ccache/cuda/nvcc
 
-        ~/ccache/bin/ccache -M 25Gi
-    fi
+#        ~/ccache/bin/ccache -M 25Gi
+#    fi
 
-    export PATH=~/ccache/lib:$PATH
-    export CUDA_NVCC_EXECUTABLE=~/ccache/cuda/nvcc
+#    export PATH=~/ccache/lib:$PATH
+#    export CUDA_NVCC_EXECUTABLE=~/ccache/cuda/nvcc
 
     # add cuda to PATH and LD_LIBRARY_PATH
     export PATH=/usr/local/cuda/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
     if [ "$ARCH" == "ppc64le" ]; then
-        apt-get install -y libopenblas-dev
-        apt-get install libopenmpi-dev -y
+#        apt-get install -y libopenblas-dev
+#        apt-get install libopenmpi-dev -y
         export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
     fi
 

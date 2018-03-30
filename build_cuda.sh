@@ -175,20 +175,20 @@ echo "Checking Miniconda"
 #    miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
 #fi
 
-if ! ls ~/miniconda
-then
-    echo "Miniconda needs to be installed"
+#if ! ls ~/miniconda
+#then
+#    echo "Miniconda needs to be installed"
     # wget $miniconda_url -O ~/miniconda.sh
-    curl $miniconda_url -o ~/miniconda.sh
-    bash ~/miniconda.sh -b -p $HOME/miniconda
-else
-    echo "Miniconda is already installed"
-fi
+#    curl $miniconda_url -o ~/miniconda.sh
+#    bash ~/miniconda.sh -b -p $HOME/miniconda
+#else
+#    echo "Miniconda is already installed"
+#fi
 
-export PATH="$HOME/miniconda/bin:$PATH"
+#export PATH="$HOME/miniconda/bin:$PATH"
 
 
-export CONDA_ROOT_PREFIX=$(conda info --root)
+#export CONDA_ROOT_PREFIX=$(conda info --root)
 
 # by default we install py3. If requested py2, create env and activate
 #if [ $PYTHON_VERSION -eq 2 ]
@@ -207,10 +207,10 @@ export CONDA_ROOT_PREFIX=$(conda info --root)
 
 echo "Conda root: $CONDA_ROOT_PREFIX"
 
-if ! which cmake
-then
-    conda install -y cmake
-fi
+#if ! which cmake
+#then
+#    conda install -y cmake
+#fi
 
 # install mkl
 if [ "$ARCH" == "ppc64le" ]; then
@@ -218,28 +218,29 @@ if [ "$ARCH" == "ppc64le" ]; then
     # Workaround is to install via pip until openblas gets updated to
     # newer version 2.20
     # conda install -y numpy openblas
-    pip install numpy
+    echo "hello"
+    #pip install numpy
 else
     conda install -y mkl numpy
 fi
 
 #install ninja
-if [ "$ARCH" == "ppc64le" ]; then
-    if ! ls /usr/local/bin/ninja
-    then
-        git clone https://github.com/ninja-build/ninja.git
-        pushd ninja
-        git checkout tags/v1.7.2
-        ./configure.py --bootstrap 
+#if [ "$ARCH" == "ppc64le" ]; then
+    #if ! ls /usr/local/bin/ninja
+#    then
+#        git clone https://github.com/ninja-build/ninja.git
+#        pushd ninja
+#        git checkout tags/v1.7.2
+#        ./configure.py --bootstrap 
 #        cp ninja /usr/local/bin
-        PATH=~/ninja:$PATH
-        popd
-    fi
-fi
+#        PATH=~/ninja:$PATH
+#        popd
+#    fi
+#fi
 
 
 # install pyyaml (for setup)
-conda install -y pyyaml typing
+#conda install -y pyyaml typing
 
 #if [ "$OS" == "LINUX" ]; then
 #    if [ "$ARCH" == "ppc64le" ]; then
@@ -293,7 +294,7 @@ python --version
 # uninstall leaves files behind, you can still get into a bad situation,
 # but it is less likely to occur now.
 echo "Removing old builds of torch"
-pip uninstall -y torch || true
+#pip uninstall -y torch || true
 
 echo "Installing $PROJECT at branch $GIT_BRANCH and commit $GIT_COMMIT"
 rm -rf $PROJECT
@@ -308,8 +309,10 @@ if [ "$OS" == "OSX" ]; then
     export CC=clang
     export CXX=clang++
 fi
-pip install -r requirements.txt || true
+#pip install -r requirements.txt || true
 time python setup.py install
+
+exit
 
 if [ ! -z "$jenkins_nightly" ]; then
     # Uninstall any leftover copies of onnx and onnx-caffe2

@@ -61,7 +61,7 @@ fi
 
 uname -a
 
-if [ "$OS" == "LINUX" ]; then
+#if [ "$OS" == "LINUX" ]; then
     # install and export ccache
 #    if ! ls ~/ccache/bin/ccache
 #    then
@@ -102,8 +102,8 @@ if [ "$OS" == "LINUX" ]; then
 #    export CUDA_NVCC_EXECUTABLE=~/ccache/cuda/nvcc
 
     # add cuda to PATH and LD_LIBRARY_PATH
-    export PATH=/usr/local/cuda/bin:$PATH
-    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+#    export PATH=/usr/local/cuda/bin:$PATH
+#    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 #    if [ "$ARCH" == "ppc64le" ]; then
 #        apt-get install -y libopenblas-dev
 #        apt-get install libopenmpi-dev -y
@@ -161,10 +161,11 @@ if [ "$OS" == "LINUX" ]; then
 #            echo "Downloaded and installed CuDNN 6.0.21"
 #        fi
 #    fi
-fi
+#fi
 
 echo "Checking Miniconda"
 
+exit
 
 if [ "$OS" == "LINUX" ]; then
     if [ "$ARCH" == "ppc64le" ]; then

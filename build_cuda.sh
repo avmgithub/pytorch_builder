@@ -298,8 +298,12 @@ python --version
 echo "Removing old builds of torch"
 #pip uninstall -y torch || true
 
-mkdir $HOME/tmp
-alias nvcc="nvcc --keep-dir $HOME/tmp"
+if ! ls $HOME/tmp 
+then
+    mkdir $HOME/tmp
+fi
+
+#alias nvcc="nvcc --keep-dir $HOME/tmp"
 
 echo "Installing $PROJECT at branch $GIT_BRANCH and commit $GIT_COMMIT"
 rm -rf $PROJECT

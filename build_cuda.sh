@@ -99,11 +99,13 @@ uname -a
 #    fi
 
 #    export PATH=~/ccache/lib:$PATH
-#    export CUDA_NVCC_EXECUTABLE=~/ccache/cuda/nvcc
+    export PATH=/local/cluster/PPC64LE/cuda-8.0/bin:$PATH
+    export CUDA_NVCC_EXECUTABLE=/local/cluster/PPC64LE/cuda-8.0/bin/nvcc
 
     # add cuda to PATH and LD_LIBRARY_PATH
 #    export PATH=/usr/local/cuda/bin:$PATH
 #    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=/local/cluster/PPC64LE/cuda-8.0/lib64:$LD_LIBRARY_PATH
 #    if [ "$ARCH" == "ppc64le" ]; then
 #        apt-get install -y libopenblas-dev
 #        apt-get install libopenmpi-dev -y

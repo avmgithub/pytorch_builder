@@ -165,27 +165,27 @@ uname -a
 
 echo "Checking Miniconda"
 
-#if [ "$OS" == "LINUX" ]; then
-#    if [ "$ARCH" == "ppc64le" ]; then
-#        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh"
-#    else
-#        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
-#    fi
-#else
-#    miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
-#fi
+if [ "$OS" == "LINUX" ]; then
+    if [ "$ARCH" == "ppc64le" ]; then
+        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh"
+    else
+        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+    fi
+else
+    miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
+fi
 
-#if ! ls ~/miniconda
-#then
-#    echo "Miniconda needs to be installed"
+if ! ls ~/miniconda
+then
+    echo "Miniconda needs to be installed"
     # wget $miniconda_url -O ~/miniconda.sh
-#    curl $miniconda_url -o ~/miniconda.sh
-#    bash ~/miniconda.sh -b -p $HOME/miniconda
-#else
-#    echo "Miniconda is already installed"
-#fi
+    curl $miniconda_url -o ~/miniconda.sh
+    bash ~/miniconda.sh -b -p $HOME/miniconda
+else
+    echo "Miniconda is already installed"
+fi
 
-#export PATH="$HOME/miniconda/bin:$PATH"
+export PATH="$HOME/miniconda/bin:$PATH"
 
 
 #export CONDA_ROOT_PREFIX=$(conda info --root)

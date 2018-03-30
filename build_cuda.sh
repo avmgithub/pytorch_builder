@@ -165,8 +165,6 @@ uname -a
 
 echo "Checking Miniconda"
 
-exit
-
 if [ "$OS" == "LINUX" ]; then
     if [ "$ARCH" == "ppc64le" ]; then
         miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh"

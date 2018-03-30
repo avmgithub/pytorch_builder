@@ -2,7 +2,7 @@
 
 echo "here in build_nimbix"
 
-set -e
+set -xe
 
 PROJECT=$1
 GIT_COMMIT=$2
@@ -104,63 +104,64 @@ if [ "$OS" == "LINUX" ]; then
     # add cuda to PATH and LD_LIBRARY_PATH
     export PATH=/usr/local/cuda/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-    if [ "$ARCH" == "ppc64le" ]; then
+#    if [ "$ARCH" == "ppc64le" ]; then
 #        apt-get install -y libopenblas-dev
 #        apt-get install libopenmpi-dev -y
-        export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
-    fi
+#        export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
+#    fi
 
-    if ! ls /usr/local/cuda-8.0
-    then
-        if [ "$ARCH" == "ppc64le" ]; then
-            if ! ls /usr/local/cuda-8.0 && ! ls /usr/local/cuda-9.0
-            then 
+#    if ! ls /usr/local/cuda-8.0
+#    then
+#        if [ "$ARCH" == "ppc64le" ]; then
+#            if ! ls /usr/local/cuda-8.0 && ! ls /usr/local/cuda-9.0
+#            then 
                 # ppc64le builds assume to have all CUDA libraries installed
                 # if they are not installed then exit and fix the problem
-                echo "Download CUDA 8.0 or CUDA 9.0 for ppc64le"
-                exit
-            fi
-        else
-            echo "Downloading CUDA 8.0"
-            wget -c https://developer.nvidia.com/compute/cuda/8.0/prod/local_installers/cuda_8.0.44_linux-run -O ~/cuda_8.0.44_linux-run
+#                echo "Download CUDA 8.0 or CUDA 9.0 for ppc64le"
+#                exit
+#            fi
+#        else
+#            echo "Downloading CUDA 8.0"
+#            wget -c https://developer.nvidia.com/compute/cuda/8.0/prod/local_installers/cuda_8.0.44_linux-run -O ~/cuda_8.0.44_linux-run
 
-            echo "Installing CUDA 8.0"
-            chmod +x ~/cuda_8.0.44_linux-run
-            bash ~/cuda_8.0.44_linux-run --silent --toolkit --no-opengl-libs
-            echo "\nDone installing CUDA 8.0"
-        fi
-    else
-        echo "CUDA 8.0 already installed"
-    fi
+#            echo "Installing CUDA 8.0"
+#            chmod +x ~/cuda_8.0.44_linux-run
+#            bash ~/cuda_8.0.44_linux-run --silent --toolkit --no-opengl-libs
+#            echo "\nDone installing CUDA 8.0"
+#        fi
+#    else
+#        echo "CUDA 8.0 already installed"
+#    fi
 
     echo "nvcc: $(which nvcc)"
 
-    if [ "$ARCH" == "ppc64le" ]; then
+
+#    if [ "$ARCH" == "ppc64le" ]; then
         # cuDNN libraries need to be downloaded from NVDIA and 
         # requires user registration.
         # ppc64le builds assume to have all cuDNN libraries installed
         # if they are not installed then exit and fix the problem
-        if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7.0.3
-        then
-            echo "Install (CUDA 8) CuDNN 6.0 or (CUDA 9) 7.0 for ppc64le"
-            exit
-        fi
-    else
-        if ! ls /usr/local/cuda/lib64/libcudnn.so.6.0.21
-        then
-            echo "CuDNN 6.0.21 not found. Downloading and copying to /usr/local/cuda"
-            mkdir -p /tmp/cudnn-download
-            pushd /tmp/cudnn-download
-            rm -rf cuda
-            wget http://developer.download.nvidia.com/compute/redist/cudnn/v6.0/cudnn-8.0-linux-x64-v6.0.tgz
-            tar -xvf cudnn-8.0-linux-x64-v6.0.tgz
-            sudo cp -P cuda/include/* /usr/local/cuda/include/
-            sudo cp -P cuda/lib64/* /usr/local/cuda/lib64/
-            popd
-            echo "Downloaded and installed CuDNN 6.0.21"
-        fi
-    fi
-fi
+#        if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7.0.3
+#        then
+#            echo "Install (CUDA 8) CuDNN 6.0 or (CUDA 9) 7.0 for ppc64le"
+#            exit
+#        fi
+#    else
+#        if ! ls /usr/local/cuda/lib64/libcudnn.so.6.0.21
+#        then
+#            echo "CuDNN 6.0.21 not found. Downloading and copying to /usr/local/cuda"
+#            mkdir -p /tmp/cudnn-download
+#            pushd /tmp/cudnn-download
+#            rm -rf cuda
+#            wget http://developer.download.nvidia.com/compute/redist/cudnn/v6.0/cudnn-8.0-linux-x64-v6.0.tgz
+#            tar -xvf cudnn-8.0-linux-x64-v6.0.tgz
+#            sudo cp -P cuda/include/* /usr/local/cuda/include/
+#            sudo cp -P cuda/lib64/* /usr/local/cuda/lib64/
+#            popd
+#            echo "Downloaded and installed CuDNN 6.0.21"
+#        fi
+#    fi
+#fi
 
 echo "Checking Miniconda"
 
@@ -231,7 +232,8 @@ if [ "$ARCH" == "ppc64le" ]; then
         pushd ninja
         git checkout tags/v1.7.2
         ./configure.py --bootstrap 
-        cp ninja /usr/local/bin
+#        cp ninja /usr/local/bin
+        PATH=~/ninja:$PATH
         popd
     fi
 fi
@@ -254,7 +256,8 @@ if [ "$OS" == "LINUX" ]; then
             sed -i 's/\/usr\/local\/openblas/\/usr/' make.inc
             sed -i 's/#CUDADIR/CUDADIR/' make.inc
             sed -i 's/#GPU_TARGET ?= Kepler Maxwell Pascal/GPU_TARGET ?= Kepler Maxwell Pascal/' make.inc
-            make -j32 install
+#            make -j32 install
+            make -j32
             popd
             rm magma-2.3.0.tar.gz
             rm -rf magma-2.3.0

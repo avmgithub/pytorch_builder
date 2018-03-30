@@ -242,34 +242,34 @@ fi
 # install pyyaml (for setup)
 conda install -y pyyaml typing
 
-if [ "$OS" == "LINUX" ]; then
-    if [ "$ARCH" == "ppc64le" ]; then
-        if ! ls /usr/local/magma/lib/libmagma.so
-        then
-            apt-get install -y gfortran
-            /usr/bin/curl -o magma-2.3.0.tar.gz "http://icl.cs.utk.edu/projectsfiles/magma/downloads/magma-2.3.0.tar.gz"
-            gunzip -c magma-2.3.0.tar.gz | tar -xvf -
-            pushd magma-2.3.0
-            cp make.inc-examples/make.inc.openblas make.inc
-            sed -i 's/nvcc/\/usr\/local\/cuda\/bin\/nvcc/' make.inc
-            sed -i 's/#OPENBLASDIR/OPENBLASDIR/' make.inc
-            sed -i 's/\/usr\/local\/openblas/\/usr/' make.inc
-            sed -i 's/#CUDADIR/CUDADIR/' make.inc
-            sed -i 's/#GPU_TARGET ?= Kepler Maxwell Pascal/GPU_TARGET ?= Kepler Maxwell Pascal/' make.inc
+#if [ "$OS" == "LINUX" ]; then
+#    if [ "$ARCH" == "ppc64le" ]; then
+#        if ! ls /usr/local/magma/lib/libmagma.so
+#        then
+#            apt-get install -y gfortran
+#            /usr/bin/curl -o magma-2.3.0.tar.gz "http://icl.cs.utk.edu/projectsfiles/magma/downloads/magma-2.3.0.tar.gz"
+#            gunzip -c magma-2.3.0.tar.gz | tar -xvf -
+#            pushd magma-2.3.0
+#            cp make.inc-examples/make.inc.openblas make.inc
+#            sed -i 's/nvcc/\/usr\/local\/cuda\/bin\/nvcc/' make.inc
+#            sed -i 's/#OPENBLASDIR/OPENBLASDIR/' make.inc
+#            sed -i 's/\/usr\/local\/openblas/\/usr/' make.inc
+#            sed -i 's/#CUDADIR/CUDADIR/' make.inc
+#            sed -i 's/#GPU_TARGET ?= Kepler Maxwell Pascal/GPU_TARGET ?= Kepler Maxwell Pascal/' make.inc
 #            make -j32 install
-            make -j32
-            popd
-            rm magma-2.3.0.tar.gz
-            rm -rf magma-2.3.0
-        fi
-    else
-        conda install -y magma-cuda80 -c soumith
-    fi
-fi
+#            make -j32
+#            popd
+#            rm magma-2.3.0.tar.gz
+#            rm -rf magma-2.3.0
+#        fi
+#    else
+#        conda install -y magma-cuda80 -c soumith
+#    fi
+#fi
 
 # add mkl to CMAKE_PREFIX_PATH
-export CMAKE_LIBRARY_PATH=$CONDA_ROOT_PREFIX/lib:$CONDA_ROOT_PREFIX/include:$CMAKE_LIBRARY_PATH
-export CMAKE_PREFIX_PATH=$CONDA_ROOT_PREFIX
+#export CMAKE_LIBRARY_PATH=$CONDA_ROOT_PREFIX/lib:$CONDA_ROOT_PREFIX/include:$CMAKE_LIBRARY_PATH
+#export CMAKE_PREFIX_PATH=$CONDA_ROOT_PREFIX
 
 echo "Python Version:"
 python --version

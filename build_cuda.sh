@@ -296,6 +296,9 @@ python --version
 echo "Removing old builds of torch"
 #pip uninstall -y torch || true
 
+mkdir $HOME/tmp
+alias nvcc="nvcc --keep-dir $HOME/tmp"
+
 echo "Installing $PROJECT at branch $GIT_BRANCH and commit $GIT_COMMIT"
 rm -rf $PROJECT
 git clone https://github.com/pytorch/$PROJECT --quiet

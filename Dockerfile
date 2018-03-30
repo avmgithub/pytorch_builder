@@ -6,6 +6,7 @@ COPY build_nimbix.sh ./
 COPY refresh_image.sh ./
 RUN pwd
 RUN ls
-RUN ./refresh_image.sh
+RUN ./refresh_image.sh pytorch HEAD master foo 3 LINUX
+
 
 ENTRYPOINT ["./build.sh"]

@@ -6,6 +6,6 @@ COPY build_nimbix.sh ./
 COPY refresh_image.sh ./
 RUN pwd
 RUN ls
-RUN ./refresh_images.sh
+RUN ./refresh_image.sh
 
 ENTRYPOINT ["./build.sh"]

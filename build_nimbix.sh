@@ -218,7 +218,7 @@ if [ "$ARCH" == "ppc64le" ]; then
     # Workaround is to install via pip until openblas gets updated to
     # newer version 2.20
     # conda install -y numpy openblas
-    pip install numpy
+    pip install numpy==1.13.3
 else
     conda install -y mkl numpy
 fi

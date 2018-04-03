@@ -1,6 +1,8 @@
 FROM osuosl/ubuntu-ppc64le-cuda:9.0-cudnn7
 
-#RUN git clone https://github.com/avmgithub/pytorch_builder.git
+USER jenkins
+ENV HOME /home/jenkins
+
 COPY build.sh ./
 COPY build_nimbix.sh ./
 COPY refresh_image_with_mpi.sh ./

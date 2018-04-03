@@ -167,7 +167,7 @@ echo "Checking Miniconda"
 
 if [ "$OS" == "LINUX" ]; then
     if [ "$ARCH" == "ppc64le" ]; then
-        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh"
+        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-4.3.27-Linux-ppc64le.sh"
     else
         miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
     fi
@@ -218,7 +218,7 @@ if [ "$ARCH" == "ppc64le" ]; then
     # Workaround is to install via pip until openblas gets updated to
     # newer version 2.20
     # conda install -y numpy openblas
-    pip install numpy
+    pip install numpy==1.13.3
 else
     conda install -y mkl numpy
 fi

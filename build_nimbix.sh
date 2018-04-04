@@ -185,6 +185,7 @@ else
 fi
 
 export PATH="$HOME/miniconda/bin:$PATH"
+echo $PATH
 
 
 export CONDA_ROOT_PREFIX=$(conda info --root)
@@ -218,7 +219,7 @@ if [ "$ARCH" == "ppc64le" ]; then
     # Workaround is to install via pip until openblas gets updated to
     # newer version 2.20
     # conda install -y numpy openblas
-    pip install numpy scipy
+    pip install numpy
 else
     conda install -y mkl numpy
 fi

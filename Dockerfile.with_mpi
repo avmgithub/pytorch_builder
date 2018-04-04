@@ -4,11 +4,13 @@ USER jenkins
 ENV HOME /home/jenkins
 
 COPY build.sh ./
+COPY build_mpi.sh ./
 COPY build_nimbix.sh ./
 COPY refresh_image_with_mpi.sh ./
+COPY build_nimbix_with_scipy.sh ./
 RUN pwd
 RUN ls
 RUN ./refresh_image_with_mpi.sh pytorch HEAD master foo 3 LINUX
 
 
-ENTRYPOINT ["./build.sh"]
+ENTRYPOINT ["./build_mpi.sh"]

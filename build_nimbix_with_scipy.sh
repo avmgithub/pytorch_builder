@@ -292,9 +292,6 @@ python --version
 # The fix is simple: uninstall, then reinstall.  Of course, if the
 # uninstall leaves files behind, you can still get into a bad situation,
 # but it is less likely to occur now.
-
-exit 0
-
 echo "Removing old builds of torch"
 pip uninstall -y torch || true
 

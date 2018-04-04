@@ -1,6 +1,6 @@
 FROM osuosl/ubuntu-ppc64le-cuda:9.0-cudnn7
 
-USER jenkins
+ENV USER jenkins
 ENV HOME /home/jenkins
 
 COPY build.sh ./

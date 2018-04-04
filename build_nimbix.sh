@@ -105,8 +105,7 @@ if [ "$OS" == "LINUX" ]; then
     export PATH=/usr/local/cuda/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
     if [ "$ARCH" == "ppc64le" ]; then
-        sudo apt-get install -y libopenblas-dev
-        sudo apt-get install libopenmpi-dev -y
+        sudo apt-get install -y libopenblas-dev openmpi-bin libopenmpi-dev libopenmpi1.10 openmpi-common
         export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
     fi
 
@@ -209,6 +208,7 @@ echo "Conda root: $CONDA_ROOT_PREFIX"
 
 if ! which cmake
 then
+    echo "Did not find cmake"
     conda install -y cmake
 fi
 
@@ -218,7 +218,7 @@ if [ "$ARCH" == "ppc64le" ]; then
     # Workaround is to install via pip until openblas gets updated to
     # newer version 2.20
     # conda install -y numpy openblas
-    pip install numpy==1.13.3
+    pip install numpy scipy
 else
     conda install -y mkl numpy
 fi

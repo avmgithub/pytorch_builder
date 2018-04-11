@@ -2,7 +2,7 @@
 
 echo "here in build_nimbix"
 
-set -e
+set -xe
 
 PROJECT=$1
 GIT_COMMIT=$2

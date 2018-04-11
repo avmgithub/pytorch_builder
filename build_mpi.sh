@@ -2,4 +2,4 @@
 
 set -xe
 
-./build_nimbix_with_scipy.sh  pytorch HEAD master foo 3 LINUX
+./build_nimbix_with_scipy.sh  pytorch HEAD master foo ${PYTHON_VERSION} LINUX

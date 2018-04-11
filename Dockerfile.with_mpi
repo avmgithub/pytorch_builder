@@ -1,16 +1,56 @@
 FROM osuosl/ubuntu-ppc64le-cuda:9.0-cudnn7
 
-ENV USER jenkins
-ENV HOME /home/jenkins
+ARG user=pytorch
+ARG group=pytorch
+ARG uid=1001
+ARG gid=1001
+ARG PYTORCH_AGENT_HOME=/home/${user}
 
-COPY build.sh ./
-COPY build_mpi.sh ./
-COPY build_nimbix.sh ./
-COPY refresh_image_with_mpi.sh ./
-COPY build_nimbix_with_scipy.sh ./
+ENV PYTORCH_AGENT_HOME ${PYTORCH_AGENT_HOME}
+ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk
+ENV PATH $PATH:$JAVA_HOME/bin
+ENV PYTHON_VERSION ${variable:-3}
+
+RUN groupadd -g ${gid} ${group} && \
+    useradd -d "${PYTORCH_AGENT_HOME}" -u "${uid}" -g "${gid}" -m -s /bin/bash "${user}"
+
+# setup sudo
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y sudo && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    echo "${user} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+USER ${user}
+WORKDIR ${PYTORCH_AGENT_HOME}
+ENV USER ${user}
+ENV HOME /home/${user}
+
+# Install conda py3
+RUN curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh \
+    -o ${PYTORCH_AGENT_HOME}/miniconda.sh && \
+    bash ${PYTORCH_AGENT_HOME}/miniconda.sh -b -p ${PYTORCH_AGENT_HOME}/miniconda && \
+    export PATH=${PYTORCH_AGENT_HOME}/miniconda/bin:$PATH && \
+    conda install -y pyyaml typing && \
+    pip install numpy scipy && \
+    conda clean -ya
+
+# Install conda py2
+RUN export PATH=${PYTORCH_AGENT_HOME}/miniconda/bin:$PATH && \
+    conda create -n py2k python=2 -y && \
+    bash -c "source activate py2k" && \
+    export CONDA_ROOT_PREFIX="${PYTORCH_AGENT_HOME}/miniconda/envs/py2k" && \
+    conda install -y pyyaml typing && \
+    ${CONDA_ROOT_PREFIX}/bin/pip install numpy scipy && \
+    conda clean -ya
+
+COPY build.sh ${PYTORCH_AGENT_HOME}
+COPY build_mpi.sh ${PYTORCH_AGENT_HOME}
+COPY build_nimbix.sh ${PYTORCH_AGENT_HOME}
+COPY refresh_image_with_mpi.sh ${PYTORCH_AGENT_HOME}
+COPY build_nimbix_with_scipy.sh ${PYTORCH_AGENT_HOME}
 RUN pwd
 RUN ls
-RUN ./refresh_image_with_mpi.sh pytorch HEAD master foo 3 LINUX
+RUN ${HOME}/refresh_image_with_mpi.sh pytorch HEAD master foo ${PYTHON_VERSION} LINUX
 
 
 ENTRYPOINT ["./build_mpi.sh"]

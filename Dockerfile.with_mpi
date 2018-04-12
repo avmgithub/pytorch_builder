@@ -20,37 +20,37 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     echo "${user} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-USER ${user}
-WORKDIR ${PYTORCH_AGENT_HOME}
-ENV USER ${user}
-ENV HOME /home/${user}
+#USER ${user}
+#WORKDIR ${PYTORCH_AGENT_HOME}
+#ENV USER ${user}
+#ENV HOME /home/${user}
 
 # Install conda py3
 RUN curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh \
-    -o ${PYTORCH_AGENT_HOME}/miniconda.sh && \
-    bash ${PYTORCH_AGENT_HOME}/miniconda.sh -b -p ${PYTORCH_AGENT_HOME}/miniconda && \
-    export PATH=${PYTORCH_AGENT_HOME}/miniconda/bin:$PATH && \
+    -o ~/miniconda.sh && \
+    bash ~/miniconda.sh -b -p /opt/miniconda && \
+    export PATH=/opt/miniconda/bin:$PATH && \
     conda install -y pyyaml typing && \
     pip install numpy scipy && \
     conda clean -ya
 
 # Install conda py2
-RUN export PATH=${PYTORCH_AGENT_HOME}/miniconda/bin:$PATH && \
+RUN export PATH=/opt/miniconda/bin:$PATH && \
     conda create -n py2k python=2 -y && \
     bash -c "source activate py2k" && \
-    export CONDA_ROOT_PREFIX="${PYTORCH_AGENT_HOME}/miniconda/envs/py2k" && \
+    export CONDA_ROOT_PREFIX="/opt/miniconda/envs/py2k" && \
     conda install -y pyyaml typing && \
     ${CONDA_ROOT_PREFIX}/bin/pip install numpy scipy && \
     conda clean -ya
 
-COPY build.sh ${PYTORCH_AGENT_HOME}
-COPY build_mpi.sh ${PYTORCH_AGENT_HOME}
-COPY build_nimbix.sh ${PYTORCH_AGENT_HOME}
-COPY refresh_image_with_mpi.sh ${PYTORCH_AGENT_HOME}
-COPY build_nimbix_with_scipy.sh ${PYTORCH_AGENT_HOME}
+COPY build.sh ./
+COPY build_mpi.sh ./
+COPY build_nimbix.sh ./ 
+COPY refresh_image_with_mpi.sh ./
+COPY build_nimbix_with_scipy.sh ./
 RUN pwd
 RUN ls
-RUN ${HOME}/refresh_image_with_mpi.sh pytorch HEAD master foo ${PYTHON_VERSION} LINUX
+RUN ./refresh_image_with_mpi.sh pytorch HEAD master foo ${PYTHON_VERSION} LINUX
 
 
 ENTRYPOINT ["./build_mpi.sh"]

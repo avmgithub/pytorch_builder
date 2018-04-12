@@ -184,7 +184,7 @@ else
     echo "Miniconda is already installed"
 fi
 
-export PATH="$HOME/miniconda/bin:$PATH"
+export PATH="/opt/miniconda/bin:$HOME/miniconda/bin:$PATH"
 echo $PATH
 
 
@@ -350,7 +350,7 @@ export MKL_NUM_THREADS=4
 # time test/run_test.sh
 
 # New pytorch test script
-time python test/run_test.py --verbose
+su pytorch -c  "time python test/run_test.py --verbose"
 
 echo "Installing torchvision at branch master"
 rm -rf vision

@@ -350,7 +350,8 @@ export MKL_NUM_THREADS=4
 # time test/run_test.sh
 
 # New pytorch test script
-su jenkins -c  "LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH PATH=/opt/miniconda/bin:$PATH time python test/run_test.py --verbose"
+chown -R jenkins /home/jenkins/pytorch
+time su jenkins -c  "PATH=/opt/miniconda/bin:$PATH python /home/jenkins/pytorch/test/run_test.py --verbose"
 
 echo "Installing torchvision at branch master"
 rm -rf vision

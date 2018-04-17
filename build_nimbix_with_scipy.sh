@@ -103,7 +103,7 @@ if [ "$OS" == "LINUX" ]; then
 
     # add cuda to PATH and LD_LIBRARY_PATH
     export PATH=/usr/local/cuda/bin:$PATH
-    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/nvidia/lib64:$LD_LIBRARY_PATH
     if [ "$ARCH" == "ppc64le" ]; then
         sudo apt-get install -y libopenblas-dev openmpi-bin libopenmpi-dev libopenmpi1.10 openmpi-common
         export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
@@ -310,6 +310,8 @@ fi
 pip install -r requirements.txt || true
 time python setup.py install
 
+~/ccache/bin/ccache -s
+
 if [ ! -z "$jenkins_nightly" ]; then
     # Uninstall any leftover copies of onnx and onnx-caffe2
     echo "Removing any old builds"
@@ -346,12 +348,14 @@ echo "Testing pytorch"
 export OMP_NUM_THREADS=4
 export MKL_NUM_THREADS=4
 
-# Old path for test
-# time test/run_test.sh
-
 # New pytorch test script
 chown -R jenkins /home/jenkins/pytorch
-time su jenkins -c  "PATH=/opt/miniconda/bin:$PATH python /home/jenkins/pytorch/test/run_test.py --verbose"
+if [ $PYTHON_VERSION -eq 2 ]
+then
+  time su jenkins -c  "PATH=/opt/miniconda/envs/py2k/bin:$PATH python /home/jenkins/pytorch/test/run_test.py --verbose"
+else
+  time su jenkins -c  "PATH=/opt/miniconda/bin:$PATH python /home/jenkins/pytorch/test/run_test.py --verbose"
+fi
 
 echo "Installing torchvision at branch master"
 rm -rf vision

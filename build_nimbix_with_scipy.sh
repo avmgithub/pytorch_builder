@@ -139,7 +139,7 @@ if [ "$OS" == "LINUX" ]; then
         # requires user registration.
         # ppc64le builds assume to have all cuDNN libraries installed
         # if they are not installed then exit and fix the problem
-        if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7.0.3
+        if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7.* 
         then
             echo "Install (CUDA 8) CuDNN 6.0 or (CUDA 9) 7.0 for ppc64le"
             exit

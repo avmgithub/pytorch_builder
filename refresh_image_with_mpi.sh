@@ -141,8 +141,10 @@ if [ "$OS" == "LINUX" ]; then
         # if they are not installed then exit and fix the problem
         if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7.0.3
         then
-            echo "Install (CUDA 8) CuDNN 6.0 or (CUDA 9) 7.0 for ppc64le"
-            exit
+            apt-get  remove libcudnn7-dev -y
+            apt-get  remove libcudnn7 -y
+            apt-get  install  libcudnn7=7.0.3.11-1+cuda9.0 -y
+            apt-get  install  libcudnn7-dev=7.0.3.11-1+cuda9.0 -y
         fi
     else
         if ! ls /usr/local/cuda/lib64/libcudnn.so.6.0.21
@@ -243,23 +245,22 @@ conda install -y pyyaml typing
 
 if [ "$OS" == "LINUX" ]; then
     if [ "$ARCH" == "ppc64le" ]; then
-        if ! ls /usr/local/magma/lib/libmagma.so
-        then
-            sudo apt-get install -y gfortran
-            /usr/bin/curl -o magma-2.3.0.tar.gz "http://icl.cs.utk.edu/projectsfiles/magma/downloads/magma-2.3.0.tar.gz"
-            gunzip -c magma-2.3.0.tar.gz | tar -xvf -
-            pushd magma-2.3.0
-            cp make.inc-examples/make.inc.openblas make.inc
-            sed -i 's/nvcc/\/usr\/local\/cuda\/bin\/nvcc/' make.inc
-            sed -i 's/#OPENBLASDIR/OPENBLASDIR/' make.inc
-            sed -i 's/\/usr\/local\/openblas/\/usr/' make.inc
-            sed -i 's/#CUDADIR/CUDADIR/' make.inc
-            sed -i 's/#GPU_TARGET ?= Kepler Maxwell Pascal/GPU_TARGET ?= Kepler Maxwell Pascal/' make.inc
-            sudo make -j32 install
-            popd
-            rm magma-2.3.0.tar.gz
-            rm -rf magma-2.3.0
-        fi
+        rm -rf /usr/local/magma
+        sudo apt-get install -y gfortran
+        /usr/bin/curl -o magma-2.2.0.tar.gz "http://icl.cs.utk.edu/projectsfiles/magma/downloads/magma-2.2.0.tar.gz"
+        gunzip -c magma-2.2.0.tar.gz | tar -xvf -
+        pushd magma-2.2.0
+        cp make.inc-examples/make.inc.openblas make.inc
+        sed -i 's/nvcc/\/usr\/local\/cuda\/bin\/nvcc/' make.inc
+        sed -i 's/#OPENBLASDIR/OPENBLASDIR/' make.inc
+        sed -i 's/\/usr\/local\/openblas/\/usr/' make.inc
+        sed -i 's/#CUDADIR/CUDADIR/' make.inc
+        sed -i 's/#GPU_TARGET ?= Kepler Maxwell Pascal/GPU_TARGET ?= Kepler Maxwell Pascal/' make.inc
+        sudo make -j32 install
+        popd
+        rm magma-2.2.0.tar.gz
+        rm -rf magma-2.2.0
+        sudo apt-get remove -y gfortran
     else
         conda install -y magma-cuda80 -c soumith
     fi

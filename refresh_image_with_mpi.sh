@@ -255,7 +255,7 @@ if [ "$OS" == "LINUX" ]; then
         sed -i 's/#OPENBLASDIR/OPENBLASDIR/' make.inc
         sed -i 's/\/usr\/local\/openblas/\/usr/' make.inc
         sed -i 's/#CUDADIR/CUDADIR/' make.inc
-        sed -i 's/#GPU_TARGET ?= Kepler Maxwell Pascal/GPU_TARGET ?= Kepler Maxwell Pascal/' make.inc
+        sed -i 's/#GPU_TARGET ?= Kepler Maxwell Pascal/GPU_TARGET ?= Kepler Maxwell/' make.inc
         sudo make -j32 install
         popd
         rm magma-2.2.0.tar.gz

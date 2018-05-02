@@ -25,7 +25,7 @@ RUN curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh 
     -o ~/miniconda.sh && \
     bash ~/miniconda.sh -b -p /opt/miniconda && \
     export PATH=/opt/miniconda/bin:$PATH && \
-    conda install -y pyyaml typing openblas=0.2.20 && \
+    conda install -y pyyaml typing && \
     pip install numpy scipy && \
     conda remove cffi && \
     conda clean -ya
@@ -35,7 +35,7 @@ RUN export PATH=/opt/miniconda/bin:$PATH && \
     conda create -n py2k python=2 -y && \
     bash -c "source activate py2k" && \
     export CONDA_ROOT_PREFIX="/opt/miniconda/envs/py2k" && \
-    conda install -y pyyaml typing openblas=0.2.20 && \
+    conda install -y pyyaml typing && \
     ${CONDA_ROOT_PREFIX}/bin/pip install numpy scipy && \
     conda clean -ya
 

@@ -212,7 +212,11 @@ echo "Conda root: $CONDA_ROOT_PREFIX"
 if ! which cmake
 then
     echo "Did not find cmake"
-    conda install -y cmake
+    if [ "$ARCH" == "ppc64le" ]; then
+        conda install -y cmake==3.6.3
+    else
+        conda install -y cmake
+    fi
 fi
 
 # install mkl

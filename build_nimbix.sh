@@ -349,8 +349,8 @@ if [ ! -z "$jenkins_nightly" ]; then
 fi
 
 echo "Testing pytorch"
-export OMP_NUM_THREADS=4
-export MKL_NUM_THREADS=4
+export OMP_NUM_THREADS=2
+export MKL_NUM_THREADS=2
 
 # Old path for test
 # time test/run_test.sh
@@ -367,6 +367,10 @@ time python setup.py install
 popd
 
 echo "ALL CHECKS PASSED"
+
+#Move exit here. No need to check torchvision
+sleep 10
+exit 0
 
 if [ "$OS" == "LINUX" ]; then
     if [ "$GIT_BRANCH" == "origin/master" ]

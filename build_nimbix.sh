@@ -358,6 +358,13 @@ export MKL_NUM_THREADS=2
 # New pytorch test script
 time python test/run_test.py --verbose
 
+echo "ALL CHECKS PASSED"
+
+
+#Move exit here. No need to check torchvision
+sleep 10
+exit 0
+
 echo "Installing torchvision at branch master"
 rm -rf vision
 git clone https://github.com/pytorch/vision --quiet
@@ -365,12 +372,6 @@ pushd vision
 conda install -y pillow
 time python setup.py install
 popd
-
-echo "ALL CHECKS PASSED"
-
-#Move exit here. No need to check torchvision
-sleep 10
-exit 0
 
 if [ "$OS" == "LINUX" ]; then
     if [ "$GIT_BRANCH" == "origin/master" ]

@@ -213,7 +213,7 @@ if ! which cmake
 then
     echo "Did not find cmake"
     if [ "$ARCH" == "ppc64le" ]; then
-        conda install -y cmake==3.6.3
+        conda install -y cmake==3.11.1
     else
         conda install -y cmake
     fi

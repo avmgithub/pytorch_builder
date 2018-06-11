@@ -25,9 +25,8 @@ RUN curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh 
     -o ~/miniconda.sh && \
     bash ~/miniconda.sh -b -p /opt/miniconda && \
     export PATH=/opt/miniconda/bin:$PATH && \
-    conda install -y pyyaml typing && \
-    pip install numpy scipy && \
-    conda remove cffi && \
+    conda install -y pyyaml typing cffi && \
+    pip install numpy scipy==1.0.0 && \
     conda clean -ya
 
 # Install conda py2
@@ -35,8 +34,8 @@ RUN export PATH=/opt/miniconda/bin:$PATH && \
     conda create -n py2k python=2 -y && \
     bash -c "source activate py2k" && \
     export CONDA_ROOT_PREFIX="/opt/miniconda/envs/py2k" && \
-    conda install -y pyyaml typing && \
-    ${CONDA_ROOT_PREFIX}/bin/pip install numpy scipy && \
+    conda install -y pyyaml typing cffi && \
+    ${CONDA_ROOT_PREFIX}/bin/pip install numpy scipy==1.0.0 && \
     conda clean -ya
 
 COPY build.sh ./

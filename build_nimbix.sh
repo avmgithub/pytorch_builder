@@ -278,6 +278,9 @@ export CMAKE_PREFIX_PATH=$CONDA_ROOT_PREFIX
 echo "Python Version:"
 python --version
 
+echo "cmake Version:"
+cmake --version
+
 # Why is this uninstall necessary?  In ordinary development,
 # 'python setup.py install' will overwrite an old install, so
 # it is not usually necessary uninstall the old install first.

@@ -142,10 +142,10 @@ if [ "$OS" == "LINUX" ]; then
         # if they are not installed then exit and fix the problem
         if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7.0.3
         then
-	    apt-get  remove libcudnn7-dev -y
-            apt-get  remove libcudnn7 -y
-            apt-get  install  libcudnn7=7.0.3.11-1+cuda9.0 -y
-            apt-get install libcudnn7-dev=7.0.3.11-1+cuda9.0 -y
+	    sudo apt-get  remove libcudnn7-dev -y
+            sudo apt-get  remove libcudnn7 -y
+            sudo apt-get  install  libcudnn7=7.0.3.11-1+cuda9.0 -y
+            sudo apt-get install libcudnn7-dev=7.0.3.11-1+cuda9.0 -y
         fi
     else
         if ! ls /usr/local/cuda/lib64/libcudnn.so.6.0.21

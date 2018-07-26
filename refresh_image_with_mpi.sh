@@ -112,7 +112,7 @@ if [ "$OS" == "LINUX" ]; then
     if ! ls /usr/local/cuda-8.0
     then
         if [ "$ARCH" == "ppc64le" ]; then
-            if ! ls /usr/local/cuda-8.0 && ! ls /usr/local/cuda-9.0
+            if ! ls /usr/local/cuda-8.0 && ! ls /usr/local/cuda-9.* 
             then 
                 # ppc64le builds assume to have all CUDA libraries installed
                 # if they are not installed then exit and fix the problem
@@ -139,7 +139,7 @@ if [ "$OS" == "LINUX" ]; then
         # requires user registration.
         # ppc64le builds assume to have all cuDNN libraries installed
         # if they are not installed then exit and fix the problem
-        if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7.0.3
+        if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7.0.3 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7*
         then
             apt-get  remove libcudnn7-dev -y
             apt-get  remove libcudnn7 -y

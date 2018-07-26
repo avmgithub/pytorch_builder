@@ -2,7 +2,7 @@
 
 echo "here in build_nimbix"
 
-set -e
+set -xe
 
 PROJECT=$1
 GIT_COMMIT=$2
@@ -105,15 +105,14 @@ if [ "$OS" == "LINUX" ]; then
     export PATH=/usr/local/cuda/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
     if [ "$ARCH" == "ppc64le" ]; then
-        sudo apt-get install -y libopenblas-dev
-        sudo apt-get install libopenmpi-dev -y
+        sudo apt-get install -y libopenblas-dev openmpi-bin libopenmpi-dev libopenmpi1.10 openmpi-common
         export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
     fi
 
     if ! ls /usr/local/cuda-8.0
     then
         if [ "$ARCH" == "ppc64le" ]; then
-            if ! ls /usr/local/cuda-8.0 && ! ls /usr/local/cuda-9.*
+            if ! ls /usr/local/cuda-8.0 && ! ls /usr/local/cuda-9.0 && ! ls /usr/local/cuda-9.2
             then 
                 # ppc64le builds assume to have all CUDA libraries installed
                 # if they are not installed then exit and fix the problem
@@ -140,12 +139,12 @@ if [ "$OS" == "LINUX" ]; then
         # requires user registration.
         # ppc64le builds assume to have all cuDNN libraries installed
         # if they are not installed then exit and fix the problem
-        if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7.0.3
+        if ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.6.0.21 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7.0.3 && ! ls /usr/lib/powerpc64le-linux-gnu/libcudnn.so.7*
         then
-	    sudo apt-get  remove libcudnn7-dev -y
-            sudo apt-get  remove libcudnn7 -y
-            sudo apt-get  install  libcudnn7=7.0.3.11-1+cuda9.0 -y
-            sudo apt-get install libcudnn7-dev=7.0.3.11-1+cuda9.0 -y
+            apt-get  remove libcudnn7-dev -y
+            apt-get  remove libcudnn7 -y
+            apt-get  install  libcudnn7=7.0.3.11-1+cuda9.0 -y
+            apt-get  install  libcudnn7-dev=7.0.3.11-1+cuda9.0 -y
         fi
     else
         if ! ls /usr/local/cuda/lib64/libcudnn.so.6.0.21
@@ -169,7 +168,7 @@ echo "Checking Miniconda"
 
 if [ "$OS" == "LINUX" ]; then
     if [ "$ARCH" == "ppc64le" ]; then
-        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-4.3.27-Linux-ppc64le.sh"
+        miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh"
     else
         miniconda_url="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
     fi
@@ -189,7 +188,6 @@ fi
 
 export PATH="$HOME/miniconda/bin:$PATH"
 echo $PATH
-echo $USER
 
 
 export CONDA_ROOT_PREFIX=$(conda info --root)
@@ -214,11 +212,7 @@ echo "Conda root: $CONDA_ROOT_PREFIX"
 if ! which cmake
 then
     echo "Did not find cmake"
-    if [ "$ARCH" == "ppc64le" ]; then
-        conda install -y cmake==3.11.1
-    else
-        conda install -y cmake
-    fi
+    conda install -y cmake
 fi
 
 # install mkl
@@ -227,7 +221,7 @@ if [ "$ARCH" == "ppc64le" ]; then
     # Workaround is to install via pip until openblas gets updated to
     # newer version 2.20
     # conda install -y numpy openblas
-    pip install numpy
+    pip install numpy scipy==1.0.0
 else
     conda install -y mkl numpy
 fi
@@ -267,6 +261,7 @@ if [ "$OS" == "LINUX" ]; then
             popd
             rm magma-2.3.0.tar.gz
             rm -rf magma-2.3.0
+            sudo apt-get remove -y gfortran
         fi
     else
         conda install -y magma-cuda80 -c soumith
@@ -279,9 +274,6 @@ export CMAKE_PREFIX_PATH=$CONDA_ROOT_PREFIX
 
 echo "Python Version:"
 python --version
-
-echo "cmake Version:"
-cmake --version
 
 # Why is this uninstall necessary?  In ordinary development,
 # 'python setup.py install' will overwrite an old install, so
@@ -302,6 +294,9 @@ cmake --version
 # The fix is simple: uninstall, then reinstall.  Of course, if the
 # uninstall leaves files behind, you can still get into a bad situation,
 # but it is less likely to occur now.
+
+exit 0
+
 echo "Removing old builds of torch"
 pip uninstall -y torch || true
 
@@ -354,21 +349,14 @@ if [ ! -z "$jenkins_nightly" ]; then
 fi
 
 echo "Testing pytorch"
-export OMP_NUM_THREADS=2
-export MKL_NUM_THREADS=2
+export OMP_NUM_THREADS=4
+export MKL_NUM_THREADS=4
 
 # Old path for test
 # time test/run_test.sh
 
 # New pytorch test script
 time python test/run_test.py --verbose
-
-echo "ALL CHECKS PASSED"
-
-
-#Move exit here. No need to check torchvision
-sleep 10
-exit 0
 
 echo "Installing torchvision at branch master"
 rm -rf vision
@@ -377,6 +365,8 @@ pushd vision
 conda install -y pillow
 time python setup.py install
 popd
+
+echo "ALL CHECKS PASSED"
 
 if [ "$OS" == "LINUX" ]; then
     if [ "$GIT_BRANCH" == "origin/master" ]

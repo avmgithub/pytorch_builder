@@ -114,7 +114,7 @@ if [ "$OS" == "LINUX" ]; then
     if ! ls /usr/local/cuda-8.0
     then
         if [ "$ARCH" == "ppc64le" ]; then
-            if ! ls /usr/local/cuda-8.0 && ! ls /usr/local/cuda-9.0
+            if ! ls /usr/local/cuda-8.0 && ! ls /usr/local/cuda-9.*
             then 
                 # ppc64le builds assume to have all CUDA libraries installed
                 # if they are not installed then exit and fix the problem

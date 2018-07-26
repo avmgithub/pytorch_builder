@@ -1,4 +1,4 @@
-FROM osuosl/ubuntu-ppc64le-cuda:9.1-cudnn7
+FROM osuosl/ubuntu-ppc64le-cuda:9.0-cudnn7
 
 ARG user=pytorch
 ARG group=pytorch
@@ -10,7 +10,6 @@ ENV PYTORCH_AGENT_HOME ${PYTORCH_AGENT_HOME}
 ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk
 ENV PATH $PATH:$JAVA_HOME/bin
 ENV PYTHON_VERSION ${variable:-3}
-ENV BUILD_ONLY ${variable:-NO}
 
 RUN groupadd -g ${gid} ${group} && \
     useradd -d "${PYTORCH_AGENT_HOME}" -u "${uid}" -g "${gid}" -m -s /bin/bash "${user}"
@@ -42,11 +41,11 @@ RUN export PATH=/opt/miniconda/bin:$PATH && \
 COPY build.sh ./
 COPY build_mpi.sh ./
 COPY build_nimbix.sh ./ 
-COPY refresh_image_with_mpi.sh ./
+COPY refresh_image_with_mpi.cudnn713.sh ./
 COPY build_nimbix_with_scipy.sh ./
 RUN pwd
 RUN ls
-RUN ./refresh_image_with_mpi.sh pytorch HEAD master foo ${PYTHON_VERSION} LINUX
+RUN ./refresh_image_with_mpi.cudnn713.sh pytorch HEAD master foo ${PYTHON_VERSION} LINUX
 
 
 ENTRYPOINT ["./build_mpi.sh"]

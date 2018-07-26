@@ -1,4 +1,4 @@
-FROM osuosl/ubuntu-ppc64le-cuda:9.1-cudnn7
+FROM osuosl/ubuntu-ppc64le-cuda:9.2-cudnn7
 
 ARG user=pytorch
 ARG group=pytorch
@@ -6,6 +6,13 @@ ARG uid=1001
 ARG gid=1001
 ARG PYTORCH_AGENT_HOME=/home/${user}
 
+#ARG user=jenkins
+#ARG group=jenkins
+#ARG uid=1000
+#ARG gid=1000
+#ARG JENKINS_AGENT_HOME=/home/${user}
+
+#ENV JENKINS_AGENT_HOME ${JENKINS_AGENT_HOME}
 ENV PYTORCH_AGENT_HOME ${PYTORCH_AGENT_HOME}
 ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk
 ENV PATH $PATH:$JAVA_HOME/bin
@@ -30,6 +37,11 @@ RUN curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh 
     pip install numpy scipy==1.0.0 && \
     conda clean -ya
 
+#USER jenkins
+#RUN export PATH=$JENKINS_AGENT_HOME/miniconda/bin:$PATH && \
+#    conda install -y pyyaml typing cffi cmake && \
+#    pip install numpy scipy==1.0.0 
+
 # Install conda py2
 RUN export PATH=/opt/miniconda/bin:$PATH && \
     conda create -n py2k python=2 -y && \
@@ -39,14 +51,21 @@ RUN export PATH=/opt/miniconda/bin:$PATH && \
     ${CONDA_ROOT_PREFIX}/bin/pip install numpy scipy==1.0.0 && \
     conda clean -ya
 
+#RUN export PATH=${JENKINS_AGENT_HOME}/miniconda/bin:$PATH && \
+#    bash -c "source activate py2k" && \
+#    export CONDA_ROOT_PREFIX="$JENKINS_AGENT_HOME/miniconda/envs/py2k" && \
+#    conda install -y pyyaml typing cffi cmake && \
+#    ${CONDA_ROOT_PREFIX}/bin/pip install numpy scipy==1.0.0
+
 COPY build.sh ./
-COPY build_mpi.sh ./
+COPY build_mpi.92.sh ./
 COPY build_nimbix.sh ./ 
-COPY refresh_image_with_mpi.sh ./
+COPY build_nimbix_with_scipy_92.sh ./
 COPY build_nimbix_with_scipy.sh ./
+COPY refresh_image_with_mpi.92.sh ./
 RUN pwd
-RUN ls
-RUN ./refresh_image_with_mpi.sh pytorch HEAD master foo ${PYTHON_VERSION} LINUX
+RUN ls -l
+RUN ./refresh_image_with_mpi.92.sh pytorch HEAD master foo ${PYTHON_VERSION} LINUX
 
 
-ENTRYPOINT ["./build_mpi.sh"]
+ENTRYPOINT ["./build_mpi.92.sh"]

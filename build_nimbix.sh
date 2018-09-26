@@ -362,7 +362,7 @@ export MKL_NUM_THREADS=2
 # time test/run_test.sh
 
 # New pytorch test script
-time python test/run_test.py --verbose
+time python test/run_test.py --verbose -x cpp_extensions
 
 echo "ALL CHECKS PASSED"
 

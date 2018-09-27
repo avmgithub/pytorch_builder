@@ -320,7 +320,7 @@ if [ "$OS" == "OSX" ]; then
     export CXX=clang++
 fi
 pip install -r requirements.txt || true
-time python setup.py install
+time NO_CUDA=1 python setup.py install
 
 if [ ! -z "$jenkins_nightly" ]; then
     # Uninstall any leftover copies of onnx and onnx-caffe2
@@ -362,7 +362,7 @@ export MKL_NUM_THREADS=2
 # time test/run_test.sh
 
 # New pytorch test script
-time python test/run_test.py --verbose -x cpp_extensions
+time python test/run_test.py --verbose -x distributed
 
 echo "ALL CHECKS PASSED"
 

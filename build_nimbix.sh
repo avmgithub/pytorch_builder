@@ -227,7 +227,7 @@ if [ "$ARCH" == "ppc64le" ]; then
     # Workaround is to install via pip until openblas gets updated to
     # newer version 2.20
     # conda install -y numpy openblas
-    conda install -y future libopenblas 
+    conda install -y future 
     pip install numpy
 else
     conda install -y mkl numpy
@@ -321,7 +321,8 @@ if [ "$OS" == "OSX" ]; then
     export CXX=clang++
 fi
 pip install -r requirements.txt || true
-LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH time NO_CUDA=1 python setup.py install
+export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH 
+time NO_CUDA=1 python setup.py install
 
 if [ ! -z "$jenkins_nightly" ]; then
     # Uninstall any leftover copies of onnx and onnx-caffe2

@@ -215,7 +215,7 @@ if ! which cmake
 then
     echo "Did not find cmake"
     if [ "$ARCH" == "ppc64le" ]; then
-        conda install -y cmake==3.11.1
+        conda install -y cmake
     else
         conda install -y cmake
     fi
@@ -227,6 +227,7 @@ if [ "$ARCH" == "ppc64le" ]; then
     # Workaround is to install via pip until openblas gets updated to
     # newer version 2.20
     # conda install -y numpy openblas
+    conda install -y future
     pip install numpy
 else
     conda install -y mkl numpy

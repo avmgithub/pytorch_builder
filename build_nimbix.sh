@@ -105,7 +105,7 @@ if [ "$OS" == "LINUX" ]; then
     export PATH=/usr/local/cuda/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
     if [ "$ARCH" == "ppc64le" ]; then
-        sudo apt-get install -y libopenblas-dev
+        sudo apt-get install -y libopenblas-dev libgfortran3 
         sudo apt-get install libopenmpi-dev -y
         export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
     fi
@@ -227,7 +227,7 @@ if [ "$ARCH" == "ppc64le" ]; then
     # Workaround is to install via pip until openblas gets updated to
     # newer version 2.20
     # conda install -y numpy openblas
-    conda install -y future libopenblas libgfortran
+    conda install -y future libopenblas 
     pip install numpy
 else
     conda install -y mkl numpy

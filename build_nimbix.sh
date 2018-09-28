@@ -321,8 +321,7 @@ if [ "$OS" == "OSX" ]; then
     export CXX=clang++
 fi
 pip install -r requirements.txt || true
-export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH 
-time NO_CUDA=1 python setup.py install
+export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH /bin/bash -c time NO_CUDA=1 python setup.py install
 
 if [ ! -z "$jenkins_nightly" ]; then
     # Uninstall any leftover copies of onnx and onnx-caffe2

@@ -228,7 +228,7 @@ if [ "$ARCH" == "ppc64le" ]; then
     # newer version 2.20
     # conda install -y numpy openblas
     conda install -y future libopenblas libgfortran-ng==7.3.0
-    pip install numpy
+    pip install numpy hypothesis
 else
     conda install -y mkl numpy
 fi

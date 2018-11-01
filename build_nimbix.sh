@@ -205,8 +205,10 @@ then
     fi
     source activate py2k
     export CONDA_ROOT_PREFIX="$HOME/miniconda/envs/py2k"
+    export CONDA_LIB_PATH="$HOME/miniconda/envs/py2k/lib"
 else
     source activate root
+    export CONDA_LIB_PATH="/home/jenkins/miniconda/lib"
 fi
 
 echo "Conda root: $CONDA_ROOT_PREFIX"
@@ -321,7 +323,8 @@ if [ "$OS" == "OSX" ]; then
     export CXX=clang++
 fi
 pip install -r requirements.txt || true
-LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH:/home/jenkins/miniconda/lib NO_CUDA=1 python setup.py install
+#LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH:/home/jenkins/miniconda/lib NO_CUDA=1 python setup.py install
+LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH:$CONDA_LIB_PATH NO_CUDA=1 python setup.py install
 
 if [ ! -z "$jenkins_nightly" ]; then
     # Uninstall any leftover copies of onnx and onnx-caffe2

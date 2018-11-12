@@ -1,0 +1,119 @@
+#! /bin/bash
+
+set -x
+# parpia@us.ibm.com  2018/04/08
+
+OMPI_VERSION=2.1.3
+#PLATFORM=P9
+PLATFORM=P8
+OS=Ubuntu-16.04
+#OS=RHEL-7.5
+OMPI_INSTALL_DIR=/usr/local/openmpi
+#LSF_VERSION=10.1
+
+# Ensure the install directory is empty
+
+/bin/rm -rf ${OMPI_INSTALL_DIR}
+mkdir -p ${OMPI_INSTALL_DIR}
+
+BASE=`echo ${OMPI_VERSION} | sed 's/\.[0-9]*$//'`
+OPENMPI=openmpi-${OMPI_VERSION}
+
+# Fetch a fresh copy of the source tarball
+
+/bin/rm -f ${OPENMPI}.tar.gz
+wget https://www.open-mpi.org/software/ompi/v${BASE}/downloads/${OPENMPI}.tar.gz
+
+/bin/rm -rf ${OPENMPI}
+
+gunzip -c ${OPENMPI}.tar.gz | tar -xf -
+pushd ${OPENMPI}
+
+# To select the XL compilers, set environment
+# variable USE_XL to any non-null
+
+#export USE_XL=yes
+
+if [ -z $USE_XL ]; then
+
+  echo "Using GCC ..."
+
+  export CCASFLAGS="-mcpu=power8 -O3"
+  export CFLAGS="-mcpu=power8 -O3"
+  export CXXFLAGS="-mcpu=power8 -O3"
+  export FCFLAGS="-mcpu=power8 -O3"
+
+# ./configure \
+#   --prefix=${OMPI_INSTALL_DIR} \
+#   --with-platform=mellanox/optimized \
+#    --with-hcoll=/opt/mellanox/hcoll \
+#    --with-knem=/opt/knem-1.1.2.90mlnx2 \
+#    --with-mxm=/opt/mellanox/mxm \
+#   --with-lsf=/vol/ibmplatform/lsf/${LSF_VERSION} \
+#    --with-lsf-libdir=/vol/ibmplatform/lsf/${LSF_VERSION}/linux3.10-glibc2.17-ppc64le/lib \
+#   --enable-mpirun-prefix-by-default \
+# > configure.log.$$ 2>&1
+
+
+ ./configure \
+   --prefix=${OMPI_INSTALL_DIR} \
+   --with-cuda=/usr/local/cuda \
+   --enable-mpirun-prefix-by-default \
+   --enable-mpi-cxx \
+   --enable-mpi-thread-multiple \
+ 2>&1 | tee configure.log.$$ 
+
+else
+
+  echo "Using XL compiler suite ..."
+
+  export CC=xlc
+  export CXX=xlC
+  export FC=xlf
+  export CCASFLAGS="-qarch=auto -O -qmaxmem=-1"
+  export CFLAGS="-qarch=auto -O -qmaxmem=-1"
+  export CXXFLAGS="-qarch=auto -O -qmaxmem=-1"
+  export FCFLAGS="-qarch=auto -O -qmaxmem=-1"
+
+ ./configure \
+   --prefix=${OMPI_INSTALL_DIR} \
+   --with-platform=mellanox/optimized \
+    --with-hcoll=/opt/mellanox/hcoll \
+    --with-knem=/opt/knem-1.1.2.90mlnx2 \
+    --with-mxm=/opt/mellanox/mxm \
+   --with-lsf=/vol/ibmplatform/lsf/${LSF_VERSION} \
+    --with-lsf-libdir=/vol/ibmplatform/lsf/${LSF_VERSION}/linux3.10-glibc2.17-ppc64le/lib \
+   --enable-mpirun-prefix-by-default \
+ > configure.log.$$ 2>&1
+
+fi
+
+make 2>&1 | tee make.log.$$ 
+
+make install > make.install.log.$$ 2>&1
+
+popd
+echo "Please examine the files `ls ./${OPENMPI}/*.$$`"
+
+# Fix the configuration file
+
+pushd ${OMPI_INSTALL_DIR}/etc
+mv openmpi-mca-params.conf openmpi-mca-params.conf.orig
+cat openmpi-mca-params.conf.orig \
+  | sed 's/opal_event_include=epoll/#opal_event_include=epoll/' \
+  > openmpi-mca-params.conf
+
+popd
+
+rm -rf ${OPENMPI}.tar.gz
+rm -rf ${OPENMPI}
+# Setup script
+
+cat > setup.OpenMPI-${OMPI_VERSION} << EOF
+#! /bin/bash
+
+OMPI_INSTALL_DIR=${OMPI_INSTALL_DIR}
+export PATH=\${OMPI_INSTALL_DIR}/bin:\${PATH}
+export LD_LIBRARY_PATH=\${OMPI_INSTALL_DIR}/lib:\${LD_LIBRARY_PATH}
+export MANPATH=\${OMPI_INSTALL_DIR}/share/man:\${MANPATH}
+EOF

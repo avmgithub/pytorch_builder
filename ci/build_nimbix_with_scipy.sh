@@ -12,25 +12,29 @@ PYTHON_VERSION=$5
 OS=$6
 BUILD_ONLY=$7
 CREATE_ARTIFACTS=$8
+GIT_REPO=${GIT_REPO:=pytorch}
 
-if [ "$#" -ne 8 ]
+if [ "$#" -ne 9 ]
 then
-  echo "Did not find 8 arguments" >&2
+  echo "Did not find 9 arguments" >&2
   exit 1
 fi
 
 ARCH=`uname -m`
+DISTRO=`awk -F= '/^NAME/{print $2}' /etc/os-release`
 
 echo "Username: $USER"
 echo "Homedir: $HOME"
 echo "Home ls:"
 ls -alh ~/ || true
 echo "Current directory: $(pwd)"
+echo "GIT Repository: $GIT_REPO"
 echo "Project: $PROJECT"
 echo "Branch: $GIT_BRANCH"
 echo "Commit: $GIT_COMMIT"
 echo "OS: $OS"
 echo "BUILD_ONLY: $BUILD_ONLY"
+echo "DISTRO: $DISTRO"
 
 echo "Installing dependencies"
 
@@ -53,15 +57,13 @@ uname -a
 
 if [ "$OS" == "LINUX" ]; then
 
-    export PATH=~/ccache/lib:$PATH
-    export CUDA_NVCC_EXECUTABLE=~/ccache/cuda/nvcc
+#    export PATH=~/ccache/lib:$PATH
+#    export CUDA_NVCC_EXECUTABLE=~/ccache/cuda/nvcc
 
     # add cuda to PATH and LD_LIBRARY_PATH
     export PATH=/usr/local/cuda/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/nvidia/lib64:$LD_LIBRARY_PATH
     if [ "$ARCH" == "ppc64le" ]; then
-        sudo apt-get update
-        sudo apt-get install -y libopenblas-dev #openmpi-bin libopenmpi-dev libopenmpi1.10 openmpi-common
         export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
         LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
         PATH=/usr/local/openmpi/bin:$PATH
@@ -84,11 +86,10 @@ if [ "$OS" == "LINUX" ]; then
     fi
 fi
 
-if ! ls ~/miniconda
+if ! ls ~/miniconda.sh
 then
     echo "Miniconda needs to be installed"
-    curl $miniconda_url -o ~/miniconda.sh
-    bash ~/miniconda.sh -b -p $HOME/miniconda
+    exit 1
 else
     echo "Miniconda is already installed"
 fi
@@ -119,35 +120,15 @@ echo "Conda root: $CONDA_ROOT_PREFIX"
 if ! which cmake
 then
     echo "Did not find cmake"
-    conda install -y cmake
-fi
-
-if [ "$ARCH" == "ppc64le" ]; then
-    # Installing numpy via conda pulls in openblas 2.19 , but it has a bug
-    # Workaround is to install via pip until openblas gets updated to
-    # newer version 2.20
-    # conda install -y numpy openblas
-
-    # do this in the Dockerfile
-    # pip install numpy scipy
-    pip install numpy
+    exit 1
 fi
 
 #install ninja
-if [ "$ARCH" == "ppc64le" ]; then
-    if ! ls /usr/local/bin/ninja
-    then
-        git clone https://github.com/ninja-build/ninja.git
-        pushd ninja
-        git checkout tags/v1.7.2
-        ./configure.py --bootstrap 
-        sudo cp ninja /usr/local/bin
-        popd
-    fi
+if ! which ninja
+then
+    echo "Did not find ninja"
+    exit 1
 fi
-
-# install pyyaml (for setup)
-conda install -y pyyaml typing
 
 # add CMAKE_PREFIX_PATH
 export CMAKE_LIBRARY_PATH=$CONDA_ROOT_PREFIX/lib:$CONDA_ROOT_PREFIX/include:$CMAKE_LIBRARY_PATH
@@ -178,10 +159,9 @@ python --version
 echo "Removing old builds of torch"
 pip uninstall -y torch || true
 
-echo "Installing $PROJECT at branch $GIT_BRANCH and commit $GIT_COMMIT"
+echo "Installing $GIT_REPO/$PROJECT at branch $GIT_BRANCH and commit $GIT_COMMIT"
 rm -rf $PROJECT
-git clone https://github.com/pytorch/$PROJECT --quiet
-#git clone https://github.com/avmgithub/$PROJECT --quiet
+git clone https://github.com/$GIT_REPO/$PROJECT --quiet
 cd $PROJECT
 git fetch --tags https://github.com/pytorch/$PROJECT +refs/pull/*:refs/remotes/origin/pr/* --quiet
 git checkout $GIT_BRANCH
@@ -213,9 +193,9 @@ export MKL_NUM_THREADS=4
 # New pytorch test script
 if [ $PYTHON_VERSION -eq 2 ]
 then
-  time su jenkins -c "ulimit -s unlimited; export PATH=/opt/miniconda/envs/py2k/bin:$PATH; .jenkins/pytorch/test.sh"
+  time su jenkins -c "ulimit -s unlimited; export PATH=/opt/miniconda/envs/py2k/bin:$PATH; export VALGRIND=${VALGRIND:=OFF}; .jenkins/pytorch/test.sh"
 else
-  time su jenkins -c "ulimit -s unlimited; export PATH=/opt/miniconda/bin:$PATH; .jenkins/pytorch/test.sh"
+  time su jenkins -c "ulimit -s unlimited; export PATH=/opt/miniconda/bin:$PATH; export VALGRIND=${VALGRIND:=OFF}; .jenkins/pytorch/test.sh"
 fi
 
 echo "ALL CHECKS PASSED"

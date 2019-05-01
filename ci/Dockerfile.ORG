@@ -18,7 +18,7 @@ RUN groupadd -g ${gid} ${group} && \
 
 # setup sudo
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y sudo && \
+    apt-get install --no-install-recommends -y sudo libopenblas-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     echo "${user} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
@@ -27,8 +27,8 @@ RUN curl https://repo.continuum.io/miniconda/Miniconda3-4.5.4-Linux-ppc64le.sh \
     -o ~/miniconda.sh && \
     bash ~/miniconda.sh -b -p /opt/miniconda && \
     export PATH=/opt/miniconda/bin:$PATH && \
-    conda install -y pyyaml typing cffi pillow hypothesis && \
-    pip install numpy && \
+    conda install -y pyyaml typing cffi pillow hypothesis cmake ninja && \
+    pip install numpy psutil && \
     conda clean -ya
 
 # Install conda py2
@@ -36,9 +36,8 @@ RUN export PATH=/opt/miniconda/bin:$PATH && \
     conda create -n py2k python=2 -y && \
     bash -c "source activate py2k" && \
     export CONDA_ROOT_PREFIX="/opt/miniconda/envs/py2k" && \
-    conda install -y pyyaml typing cffi pillow hypothesis && \
-    # ${CONDA_ROOT_PREFIX}/bin/pip install numpy scipy==1.0.0 hypothesis && \
-    ${CONDA_ROOT_PREFIX}/bin/pip install numpy && \
+    conda install -y pyyaml typing cffi pillow hypothesis cmake ninja && \
+    ${CONDA_ROOT_PREFIX}/bin/pip install numpy psutil && \
     conda clean -ya
 
 COPY build_mpi.sh ./

@@ -1,0 +1,77 @@
+#FROM nvidia/cuda-ppc64le:DOCKER_VERSION
+FROM nvidia/cuda-ppc64le:DOCKER_VERSION
+
+ARG user=jenkins
+ARG group=jenkins
+ARG uid=1001
+ARG gid=1001
+ARG JENKINS_AGENT_HOME=/home/${user}
+
+ENV JENKINS_AGENT_HOME ${JENKINS_AGENT_HOME}
+ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk
+ENV PATH $PATH:$JAVA_HOME/bin
+ENV PYTHON_VERSION ${variable:-3}
+ENV BUILD_ONLY ${variable:-NO}
+ENV CREATE_ARTIFACTS ${variable:-NO}
+ENV GIT_REPO ${variable:-pytorch}
+
+RUN groupadd -g ${gid} ${group} && \
+    useradd -d "${JENKINS_AGENT_HOME}" -u "${uid}" -g "${gid}" -m -s /bin/bash "${user}"
+
+#setup sudo 
+RUN yum install sudo -y && \
+    echo "jenkins ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+
+RUN yum install -y wget && \
+    wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
+    rpm -i epel-release-latest-7.noarch.rpm 
+
+# Install packages we need
+RUN yum install -y bzip2 git curl ccache make gcc-gfortran openblas-devel \
+    which valgrind
+
+# Install conda py3
+RUN curl https://repo.continuum.io/miniconda/Miniconda3-4.5.4-Linux-ppc64le.sh \
+    -o ~/miniconda.sh && \
+    bash ~/miniconda.sh -b -p /opt/miniconda && \
+    export PATH=/opt/miniconda/bin:$PATH && \
+    conda install -y cmake pyyaml typing cffi pillow hypothesis ninja && \
+    pip install numpy && \
+    conda clean -ya
+
+# Install conda py2
+RUN export PATH=/opt/miniconda/bin:$PATH && \
+    conda create -n py2k python=2 -y && \
+    bash -c "source activate py2k" && \
+    export CONDA_ROOT_PREFIX="/opt/miniconda/envs/py2k" && \
+    conda install -y cmake pyyaml typing cffi pillow hypothesis ninja && \
+    # ${CONDA_ROOT_PREFIX}/bin/pip install numpy scipy==1.0.0 hypothesis && \
+    ${CONDA_ROOT_PREFIX}/bin/pip install numpy && \
+    conda clean -ya
+
+# Install magma
+RUN curl -o magma-2.3.0.tar.gz "http://icl.cs.utk.edu/projectsfiles/magma/downloads/magma-2.3.0.tar.gz" && \
+    gunzip -c magma-2.3.0.tar.gz | tar -xvf - && cd magma-2.3.0 && \
+    cp make.inc-examples/make.inc.openblas make.inc && \
+    sed -i 's/nvcc/\/usr\/local\/cuda\/bin\/nvcc/' make.inc && \
+    sed -i 's/#OPENBLASDIR/OPENBLASDIR/' make.inc && \
+    sed -i 's/\/usr\/local\/openblas/\/usr/' make.inc && \
+    sed -i 's/#CUDADIR/CUDADIR/' make.inc && \
+    sed -i 's/#GPU_TARGET ?= Kepler Maxwell Pascal/GPU_TARGET ?= Kepler Maxwell Pascal/' make.inc && \
+    make -j20 install && cd ../ && rm -rf magma-2.3.0.tar.gz magma-2.3.0
+
+VOLUME "${JENKINS_AGENT_HOME}" "/tmp" "/run" "/var/run"
+WORKDIR "${JENKINS_AGENT_HOME}"
+
+COPY build_mpi.sh ./
+COPY build_nimbix_with_scipy.sh ./
+#COPY refresh_image_with_mpi.sh ./
+COPY buildme.mpi ./
+#RUN pwd
+#RUN ls
+RUN ./buildme.mpi
+#RUN ./refresh_image_with_mpi.sh pytorch HEAD master foo ${PYTHON_VERSION} LINUX
+
+
+ENTRYPOINT ["./build_mpi.sh"]

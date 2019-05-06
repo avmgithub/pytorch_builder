@@ -7,12 +7,12 @@ Most if not all the pytorch CI builds will start with "pytorch-"
 
 Files in this directory:
 
-build_dockefile_centos.sh  - to build centos based docker file
-build_dockefile.sh - to build Ubuntu based docker file
-buildme.mpi - for building openmpi with GPU support
-build_mpi.sh
-build_nimbix_with_scipy.sh
-Dockerfile.centos
-Dockerfile.ORG - template used by Ubuntu or Docker based files
-README.md - this file
-refresh_image_with_mpi.sh
+build_dockefile_centos.sh  - to build centos based docker file <br>
+build_dockefile.sh - to build Ubuntu based docker file <br>
+buildme.mpi - for building openmpi with GPU support <br>
+build_mpi.sh <br>
+build_nimbix_with_scipy.sh  <br>  
+Dockerfile.centos  <br>
+Dockerfile.ORG - template used by Ubuntu or Docker based files <br>
+README.md - this file <br>
+refresh_image_with_mpi.sh <br>

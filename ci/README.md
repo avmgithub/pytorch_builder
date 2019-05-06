@@ -3,7 +3,8 @@ This directory builds docker containers used for the OSU CI for Power with GPUs.
 
 See : https://powerci.osuosl.org/
 
-Most if not all the pytorch CI builds will start with "pytorch-"
+Most if not all the pytorch CI builds will start with "pytorch-" <br>
+Examples:  pytorch-linux-cuda92-cudnn7-py3-mpi-build-test-gpu  ,  pytorch-linux-cuda92-cudnn7-py3-mpi-build-only-gpu
 
 Files in this directory:
 

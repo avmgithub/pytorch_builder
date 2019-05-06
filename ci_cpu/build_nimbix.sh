@@ -69,8 +69,10 @@ if [ "$OS" == "LINUX" ]; then
         sudo apt-get install -y automake autoconf
         sudo apt-get install -y asciidoc
         mkdir -p ~/ccache
-        pushd /tmp
-        rm -rf ccache
+	mkdir -p ~/ccache_builddir
+        #pushd /tmp
+        pushd ~/ccache_builddir
+	rm -rf ccache
         git clone https://github.com/colesbury/ccache -b ccbin
         pushd ccache
         if [ "$ARCH" == "ppc64le" ]; then

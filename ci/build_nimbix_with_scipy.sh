@@ -8,7 +8,7 @@ PROJECT=$1
 GIT_COMMIT=$2
 GIT_BRANCH=$3
 GITHUB_TOKEN=$4
-PYTHON_VERSION=$5
+PYTHON_VERSION=${PYTHON_VERSION:=3}
 OS=$6
 BUILD_ONLY=$7
 CREATE_ARTIFACTS=$8
@@ -26,7 +26,7 @@ DISTRO=`awk -F= '/^NAME/{print $2}' /etc/os-release`
 echo "Username: $USER"
 echo "Homedir: $HOME"
 echo "Home ls:"
-ls -alh ~/ || true
+#ls -alh ~/ || true
 echo "Current directory: $(pwd)"
 echo "GIT Repository: $GIT_REPO"
 echo "Project: $PROJECT"
@@ -86,13 +86,13 @@ if [ "$OS" == "LINUX" ]; then
     fi
 fi
 
-if ! ls ~/miniconda.sh
-then
-    echo "Miniconda needs to be installed"
-    exit 1
-else
-    echo "Miniconda is already installed"
-fi
+#if ! ls ~/miniconda.sh
+#then
+#    echo "Miniconda needs to be installed"
+#    exit 1
+#else
+#    echo "Miniconda is already installed"
+#fi
 
 export PATH="/opt/miniconda/bin:$HOME/miniconda/bin:$PATH"
 echo $PATH
@@ -167,8 +167,9 @@ git fetch --tags https://github.com/pytorch/$PROJECT +refs/pull/*:refs/remotes/o
 git checkout $GIT_BRANCH
 git submodule update --init --recursive
 
+pip install --upgrade pip
 pip install -r requirements.txt || true
-chown -R jenkins /home/jenkins/pytorch
+chown -R jenkins /home/jenkins
 export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH:/opt/miniconda/lib
 if [ "$CREATE_ARTIFACTS" == "YES" ]; then
   python setup.py bdist_wheel
@@ -190,6 +191,7 @@ echo "Testing pytorch"
 export OMP_NUM_THREADS=4
 export MKL_NUM_THREADS=4
 
+chown -R jenkins /home/jenkins
 # New pytorch test script
 if [ $PYTHON_VERSION -eq 2 ]
 then

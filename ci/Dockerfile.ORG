@@ -14,7 +14,9 @@ ENV BUILD_ONLY ${variable:-NO}
 ENV CREATE_ARTIFACTS ${variable:-NO}
 
 RUN groupadd -g ${gid} ${group} && \
-    useradd -d "${PYTORCH_AGENT_HOME}" -u "${uid}" -g "${gid}" -m -s /bin/bash "${user}"
+    useradd -d "${PYTORCH_AGENT_HOME}" -u "${uid}" -g "${gid}" -m -s /bin/bash "${user}" && \
+    groupmod -g 10000 jenkins && \
+    usermod -g 10000 -u 10000 jenkins
 
 # setup sudo
 RUN apt-get update && \
@@ -23,11 +25,12 @@ RUN apt-get update && \
     echo "${user} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Install conda py3
-RUN curl https://repo.continuum.io/miniconda/Miniconda3-4.5.4-Linux-ppc64le.sh \
+RUN curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-ppc64le.sh \
     -o ~/miniconda.sh && \
     bash ~/miniconda.sh -b -p /opt/miniconda && \
     export PATH=/opt/miniconda/bin:$PATH && \
     conda install -y pyyaml typing cffi pillow hypothesis cmake ninja && \
+    pip install --upgrade pip && \
     pip install numpy psutil && \
     conda clean -ya
 
@@ -37,6 +40,7 @@ RUN export PATH=/opt/miniconda/bin:$PATH && \
     bash -c "source activate py2k" && \
     export CONDA_ROOT_PREFIX="/opt/miniconda/envs/py2k" && \
     conda install -y pyyaml typing cffi pillow hypothesis cmake ninja && \
+    pip install --upgrade pip && \
     ${CONDA_ROOT_PREFIX}/bin/pip install numpy psutil && \
     conda clean -ya
 
@@ -50,4 +54,4 @@ RUN ./buildme.mpi
 RUN ./refresh_image_with_mpi.sh pytorch HEAD master foo ${PYTHON_VERSION} LINUX
 
 
-ENTRYPOINT ["./build_mpi.sh"]
+#ENTRYPOINT ["./build_mpi.sh"]

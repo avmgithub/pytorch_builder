@@ -1,14 +1,18 @@
-#sed s/DOCKER_VERSION/9.2-cudnn7/ Dockerfile.ORG  > Dockerfile
-#sudo docker build -t docker.io/avmdocker/pytorch-ci:cuda92cudnn7 .
+sed s/DOCKER_VERSION/9.2-cudnn7/ Dockerfile.ORG  > Dockerfile
+sudo docker build -t docker.io/avmdocker/pytorch-ci:cuda92cudnn7 .
 
-sed s/DOCKER_VERSION/9.1-cudnn7/ Dockerfile.ORG > Dockerfile 
-sudo docker build -t docker.io/avmdocker/pytorch-ci:cuda91cudnn7 .
+#sed s/DOCKER_VERSION/9.1-cudnn7/ Dockerfile.ORG > Dockerfile 
+#sudo docker build -t docker.io/avmdocker/pytorch-ci:cuda91cudnn7 .
 
-sed s/DOCKER_VERSION/8.0-cudnn6/ Dockerfile.ORG > Dockerfile 
-sudo docker build -t docker.io/avmdocker/pytorch-ci:cuda8cudnn6 .
+#sed s/DOCKER_VERSION/8.0-cudnn6/ Dockerfile.ORG > Dockerfile 
+#sudo docker build -t docker.io/avmdocker/pytorch-ci:cuda8cudnn6 .
 
-#sudo docker push docker.io/avmdocker/pytorch-ci:cuda92cudnn7
-sudo docker push docker.io/avmdocker/pytorch-ci:cuda91cudnn7
-sudo docker push docker.io/avmdocker/pytorch-ci:cuda8cudnn6
+#sed s/DOCKER_VERSION/10.0-cudnn7/ Dockerfile.ORG > Dockerfile 
+#sudo docker build -t docker.io/avmdocker/pytorch-ci:cuda10cudnn7 .
+
+#sudo docker push docker.io/avmdocker/pytorch-ci:cuda10cudnn7
+sudo docker push docker.io/avmdocker/pytorch-ci:cuda92cudnn7
+#sudo docker push docker.io/avmdocker/pytorch-ci:cuda91cudnn7
+#sudo docker push docker.io/avmdocker/pytorch-ci:cuda8cudnn6
 
 rm Dockerfile

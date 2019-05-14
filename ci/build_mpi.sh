@@ -14,10 +14,15 @@ DISTRO=`awk -F= '/^NAME/{print $2}' /etc/os-release`
 
 if [ "$DISTRO" == "\"Ubuntu\"" ]
 then
-    if [ -f /usr/lib/powerpc64le-linux-gnu/libcuda.so.396.26 ] && [ -f /usr/lib/powerpc64le-linux-gnu/libcuda.so.396.37 ]
+    #if [ -f /usr/lib/powerpc64le-linux-gnu/libcuda.so.396.26 ] && [ -f /usr/lib/powerpc64le-linux-gnu/libcuda.so.396.37 ]
+    #then
+    #    rm /usr/lib/powerpc64le-linux-gnu/libcuda.so
+    #    ln -s /usr/lib/powerpc64le-linux-gnu/libcuda.so.396.26 /usr/lib/powerpc64le-linux-gnu/libcuda.so
+    #fi
+    if [ -f /usr/lib/powerpc64le-linux-gnu/libcuda.so.410.104 ]
     then
         rm /usr/lib/powerpc64le-linux-gnu/libcuda.so
-        ln -s /usr/lib/powerpc64le-linux-gnu/libcuda.so.396.26 /usr/lib/powerpc64le-linux-gnu/libcuda.so
+        ln -s /usr/lib/powerpc64le-linux-gnu/libcuda.so.410.104 /usr/lib/powerpc64le-linux-gnu/libcuda.so
     fi
 fi
 

@@ -11,6 +11,9 @@ GITHUB_TOKEN=$4
 PYTHON_VERSION=$5
 OS=$6
 
+usermod -u 10000 jenkins
+usermod -g 10000 jenkins
+
 if [ "$#" -ne 6 ]
 then
   echo "Did not find 6 arguments" >&2
@@ -220,7 +223,8 @@ if [ "$ARCH" == "ppc64le" ]; then
     then
         git clone https://github.com/ninja-build/ninja.git
         pushd ninja
-        git checkout tags/v1.7.2
+        #git checkout tags/v1.7.2
+        git checkout tags/v1.8.2
         ./configure.py --bootstrap 
         sudo cp ninja /usr/local/bin
         popd
